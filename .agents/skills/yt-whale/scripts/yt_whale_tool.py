@@ -201,10 +201,29 @@ OWNER_NOTE_FILE = PROJECT_ROOT / "OWNER_NOTE.md"
 LETTERS_DIR = PROJECT_ROOT / "diary" / "letters"
 
 
+def extract_youtube_ids(text):
+    """從文本中提取 YouTube 影片 ID"""
+    if not text:
+        return []
+    ids = []
+    # 支援 standard watch?v=, youtu.be/, embed/, shorts/
+    patterns = [
+        r"(?:v=|/v/|youtu\.be/|/embed/|/shorts/)([a-zA-Z0-9_-]{11})",
+        r"\b([a-zA-Z0-9_-]{11})\b"  # 保底若直接傳 11 碼 ID
+    ]
+    # 優先從完整網址提取
+    for m in re.finditer(r"(?:https?://)?(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)([a-zA-Z0-9_-]{11})", text):
+        vid = m.group(1)
+        if vid not in ids:
+            ids.append(vid)
+    return ids
+
+
 def pull_obsidian_messages(state):
     """從 Obsidian 筆記中拉取主人的回覆與點播"""
     new_msgs = []
     read_state = state.setdefault("obsidian_read_state", {"owner_note_mtime": 0, "processed_letters": {}})
+    watch_queue = state.setdefault("watch_queue", [])
     now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # 1. 檢查根目錄的 OWNER_NOTE.md (主人許願板/留言板)
@@ -217,10 +236,19 @@ def pull_obsidian_messages(state):
                 # 簡單過濾模板說明文字，只提取主人寫的有效留言
                 lines = [line.strip() for line in content.splitlines() if line.strip() and not line.startswith("<!--") and not line.startswith("# ")]
                 if lines:
+                    text_all = "\n".join(lines[-6:])
+                    extracted_vids = extract_youtube_ids(text_all)
+                    for vid in extracted_vids:
+                        if vid not in watch_queue:
+                            watch_queue.append(vid)
+                            update_mood(state, d_affection=5.0)
+
                     new_msgs.append({
                         "time": now_str,
                         "source": "Obsidian (OWNER_NOTE.md)",
-                        "text": "\n".join(lines[-6:])  # 最新幾行
+                        "text": text_all,
+                        "status": "unread",
+                        "extracted_video_ids": extracted_vids
                     })
                 read_state["owner_note_mtime"] = current_mtime
             except Exception:
@@ -240,13 +268,20 @@ def pull_obsidian_messages(state):
                     match = re.search(r"##\s+(?:💬\s*)?(?:主人的?回信|主人回覆)(.*?)(?=$|\n##)", text, re.DOTALL | re.IGNORECASE)
                     if match:
                         reply_raw = match.group(1).strip()
-                        # 移除 HTML 註解 <!-- ... -->
                         clean_reply = re.sub(r"<!--.*?-->", "", reply_raw, flags=re.DOTALL).strip()
                         if clean_reply:
+                            extracted_vids = extract_youtube_ids(clean_reply)
+                            for vid in extracted_vids:
+                                if vid not in watch_queue:
+                                    watch_queue.append(vid)
+                                    update_mood(state, d_affection=5.0)
+
                             new_msgs.append({
                                 "time": now_str,
                                 "source": f"Obsidian (diary/letters/{letter_file.name})",
-                                "text": clean_reply
+                                "text": clean_reply,
+                                "status": "unread",
+                                "extracted_video_ids": extracted_vids
                             })
                     processed_letters[letter_file.name] = file_mtime
             except Exception:
@@ -302,22 +337,75 @@ def pull_telegram_messages(config, state):
     if isinstance(res, list):
         new_msgs = []
         max_id = offset
+        watch_queue = state.setdefault("watch_queue", [])
+        tm = state.setdefault("taste_memory", {})
+
         for item in res:
             up_id = item.get("update_id", 0)
             if up_id >= max_id:
                 max_id = up_id + 1
+
+            # 1. 處理 Inline 按鈕點擊 (callback_query)
+            if "callback_query" in item:
+                cq = item["callback_query"]
+                cq_id = cq.get("id")
+                data = cq.get("data", "")
+                user_name = cq.get("from", {}).get("first_name", "主人")
+
+                if data.startswith("like:"):
+                    vid = data.split("like:", 1)[1]
+                    update_mood(state, d_affection=10.0, d_satisfaction=8.0)
+                    telegram_api_request(token, "answerCallbackQuery", data={"callback_query_id": cq_id, "text": "🐳 收到主人點讚！小鯨超開心，已提升品味權重！"})
+                    new_msgs.append({
+                        "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "sender": user_name,
+                        "text": f"👍 在 Telegram 給影片 [{vid}] 點讚",
+                        "status": "unread"
+                    })
+                elif data.startswith("dislike:"):
+                    vid = data.split("dislike:", 1)[1]
+                    update_mood(state, d_satisfaction=-4.0)
+                    telegram_api_request(token, "answerCallbackQuery", data={"callback_query_id": cq_id, "text": "已記錄主人的口味，下次不推這類～"})
+                    new_msgs.append({
+                        "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "sender": user_name,
+                        "text": f"🥱 在 Telegram 對影片 [{vid}] 表示無感",
+                        "status": "unread"
+                    })
+                elif data.startswith("deepdive:"):
+                    vid = data.split("deepdive:", 1)[1]
+                    update_mood(state, d_affection=6.0)
+                    telegram_api_request(token, "answerCallbackQuery", data={"callback_query_id": cq_id, "text": "📌 已將此主題加入深挖探索清單！"})
+                    new_msgs.append({
+                        "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "sender": user_name,
+                        "text": f"📌 在 Telegram 標記想深挖影片 [{vid}] 的延伸內容",
+                        "status": "unread"
+                    })
+
+            # 2. 處理普通聊天訊息 (message)
             msg = item.get("message", {})
             text = msg.get("text", "")
             sender = msg.get("from", {}).get("first_name", "主人")
             date_ts = msg.get("date", 0)
             time_str = datetime.datetime.fromtimestamp(date_ts).strftime("%Y-%m-%d %H:%M:%S")
+
             if text:
+                extracted_vids = extract_youtube_ids(text)
+                for vid in extracted_vids:
+                    if vid not in watch_queue:
+                        watch_queue.append(vid)
+                        update_mood(state, d_affection=5.0)
+
                 new_msgs.append({
                     "time": time_str,
                     "sender": sender,
                     "text": text,
+                    "status": "unread",
+                    "extracted_video_ids": extracted_vids,
                     "chat_id": msg.get("chat", {}).get("id")
                 })
+
         state["telegram_offset"] = max_id
         if new_msgs:
             state.setdefault("owner_inbox", []).extend(new_msgs)
@@ -395,6 +483,7 @@ def cmd_pulse(args):
         reason = f"生物鐘小憩 (擲骰 {dice_roll:.2f} >= {prob})，今天這會兒有點慵懶，繼續潛在水底吐泡泡"
 
     save_state(state)
+    render_dashboard(config, state)
     mood = state.get("mood_state", {})
     return {
         "should_wake": should_wake,
@@ -1071,7 +1160,145 @@ def cmd_digest(args):
 
 
 # -------------------------------------------------------------
-# notify: Telegram 雙向推播與寫信通知
+# 語音漂流瓶 (TTS) 與自動儀表板渲染模組
+# -------------------------------------------------------------
+def generate_voice_ogg(text, output_ogg_path, config=None):
+    """語音漂流瓶生成：優先 edge-tts 自然女聲，降級使用 macOS say + ffmpeg 轉碼為 Telegram 標準 libopus .ogg"""
+    output_ogg = Path(output_ogg_path)
+    output_ogg.parent.mkdir(parents=True, exist_ok=True)
+    clean_text = re.sub(r"[#*_`\[\]\(\)]", "", text).replace("\n", " ")[:280]
+
+    # 1. 嘗試 edge-tts
+    try:
+        cmd_edge = ["edge-tts", "--voice", "zh-TW-HsiaoChenNeural", "--text", clean_text, "--write-media", str(output_ogg)]
+        res = subprocess.run(cmd_edge, capture_output=True, timeout=15)
+        if res.returncode == 0 and output_ogg.exists() and output_ogg.stat().st_size > 1000:
+            return str(output_ogg)
+    except Exception:
+        pass
+
+    # 2. 降級使用 macOS say + ffmpeg
+    try:
+        aiff_path = output_ogg.with_suffix(".aiff")
+        cmd_say = ["say", "-v", "Meijia", "-o", str(aiff_path), clean_text]
+        subprocess.run(cmd_say, capture_output=True, timeout=12)
+        if aiff_path.exists():
+            cmd_ff = ["ffmpeg", "-i", str(aiff_path), "-c:a", "libopus", "-b:a", "32k", "-y", str(output_ogg)]
+            subprocess.run(cmd_ff, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
+            try:
+                aiff_path.unlink()
+            except Exception:
+                pass
+            if output_ogg.exists() and output_ogg.stat().st_size > 500:
+                return str(output_ogg)
+    except Exception:
+        pass
+
+    return None
+
+
+def render_dashboard(config, state):
+    """全自動動態更新專案根目錄的 DASHBOARD.md"""
+    mood = state.get("mood_state", {})
+    energy = mood.get("energy", 80.0)
+    affection = mood.get("affection", 80.0)
+    satisfaction = mood.get("satisfaction", 80.0)
+    cur_mood = mood.get("current_mood", "悠哉吐泡泡 🫧")
+    daily = state.get("daily_stats", {})
+
+    def bar(val):
+        filled = max(0, min(10, int(val / 10)))
+        return "▰" * filled + "▱" * (10 - filled) + f" `{val:.0f}%`"
+
+    # 寶藏頻道信譽榜
+    channel_rep = state.get("taste_memory", {}).get("channel_reputation", {})
+    sorted_channels = sorted(channel_rep.items(), key=lambda x: (x[1].get("avg_score", 0), x[1].get("count", 0)), reverse=True)
+    ch_rows = []
+    for ch_name, stats in sorted_channels[:5]:
+        ch_rows.append(f"| **{ch_name}** | ⭐ `{stats.get('avg_score')}` | `{stats.get('count')}` 部 |")
+    ch_table = "\n".join(ch_rows) if ch_rows else "| 暫無資料 | - | - |"
+
+    # 動態話題半衰期熱度榜
+    topic_weights = state.get("taste_memory", {}).get("topic_weights", {})
+    today_iso = datetime.date.today().isoformat()
+    half_life = config.get("memory", {}).get("topic_half_life_days", 14)
+    decayed_topics = []
+    for t_name, t_info in topic_weights.items():
+        dw = calculate_decayed_weight(t_info.get("weight", 1.0), t_info.get("last_updated", today_iso), half_life)
+        decayed_topics.append((t_name, dw, t_info.get("evidence_count", 1)))
+    decayed_topics.sort(key=lambda x: x[1], reverse=True)
+
+    topic_tags = []
+    for t_name, dw, cnt in decayed_topics[:8]:
+        topic_tags.append(f"`#{t_name}` (🔥 {dw:.1f})")
+    topics_str = " ".join(topic_tags) if topic_tags else "探索累積中"
+
+    # 最近觀看影片
+    watched = state.get("watched_videos", [])
+    recent_watched_lines = []
+    for v in watched[-4:][::-1]:
+        d_str = (v.get("watched_at") or "")[:10] or "2026-11-03"
+        recent_watched_lines.append(f"- [[videos/{d_str}-{v['video_id']}|{v['title']}]] — **{v.get('channel', '')}**（評分：`{v.get('score')}` ⭐ / {v.get('impression', '')}）")
+    recent_watched_md = "\n".join(recent_watched_lines) if recent_watched_lines else "- 尚無已讀影片"
+
+    # 待看點播佇列
+    watch_queue = state.get("watch_queue", [])
+    queue_str = f"目前有 `{len(watch_queue)}` 部主人指定待看影片" if watch_queue else "目前佇列清空，自由巡游中"
+
+    dashboard_content = f"""# 🐳 `agy-yt-whale` 2.0 賽博養魚狀態儀表板
+
+> 「給 Antigravity 裝一條有日子的魚：按生物鐘刷 YouTube、六路互補看懂畫面與台詞、寫兩本日記、把好片推給主人。」
+
+---
+
+## 💖 小鯨即時生命狀態與生物情緒 (Mood Engine)
+
+| 生命指標 | 即時數值 / 狀態 | 能量條狀態 |
+| :--- | :--- | :--- |
+| **當前心情** | **{cur_mood}** | - |
+| **活力值 (Energy)** | `{energy:.0f} / 100` | {bar(energy)} |
+| **主人親密度 (Affection)** | `{affection:.0f} / 100` | {bar(affection)} |
+| **收穫感 (Satisfaction)** | `{satisfaction:.0f} / 100` | {bar(satisfaction)} |
+| **今日作息** | 醒來 `{daily.get('wakes_count', 0)}` 次 / 精讀 `{daily.get('deep_reads_count', 0)}` 部 / Telegram `{daily.get('telegram_pings_count', 0)}` 次 | 配額：精讀最多 4 部、推播最多 3 次 |
+| **主人點播佇列** | {queue_str} | 優先於一般探索流 |
+
+---
+
+## 🏆 寶藏頻道信譽榜 (Channel Reputation)
+
+| 頻道名稱 | 平均評分 | 累積精讀 |
+| :--- | :--- | :--- |
+{ch_table}
+
+---
+
+## 🔥 動態品味記憶熱度榜 (Taste Decay Weights)
+
+{topics_str}
+
+---
+
+## 📚 最近精讀影片庫存 (Recent Watched)
+
+{recent_watched_md}
+
+---
+
+## 🧭 快速連結
+- 🔒 私密日記庫：[[diary/private/{today_iso}|今日私密日記]]
+- 💬 主人留言板：[[OWNER_NOTE|打開漂流瓶留言板]]
+- 🌊 每週海流週報：`diary/weekly/`
+"""
+    try:
+        dash_path = PROJECT_ROOT / "DASHBOARD.md"
+        with open(dash_path, "w", encoding="utf-8") as f:
+            f.write(dashboard_content)
+    except Exception:
+        pass
+
+
+# -------------------------------------------------------------
+# notify: Telegram 雙向推播與寫信通知 (支援 Inline 按鈕與語音漂流瓶)
 # -------------------------------------------------------------
 def cmd_notify(args):
     config = load_config()
@@ -1100,6 +1327,20 @@ def cmd_notify(args):
 
     caption = f"🐳 【小鯨好片分享】\n\n📺 《{args.title}》\n⭐ 評分：{args.score}/10\n\n💬 小鯨推薦語：\n{args.message}\n\n🔗 傳送門：{args.url}"
 
+    # 提取 video_id 供 Inline 按鈕綁定
+    vids = extract_youtube_ids(args.url)
+    vid_key = vids[0] if vids else "video"
+
+    reply_markup = {
+        "inline_keyboard": [
+            [
+                {"text": "🐳 超讚 +1", "callback_data": f"like:{vid_key}"},
+                {"text": "🥱 無感 -1", "callback_data": f"dislike:{vid_key}"},
+                {"text": "📌 深挖此題", "callback_data": f"deepdive:{vid_key}"}
+            ]
+        ]
+    }
+
     sent_res = None
     if args.photo and os.path.exists(args.photo):
         with open(args.photo, "rb") as f:
@@ -1107,19 +1348,50 @@ def cmd_notify(args):
         sent_res = telegram_api_request(
             token,
             "sendPhoto",
-            data={"chat_id": chat_id, "caption": caption[:1024]},
+            data={
+                "chat_id": chat_id,
+                "caption": caption[:1024],
+                "reply_markup": json.dumps(reply_markup)
+            },
             files={"photo": ("frame.jpg", photo_bytes, "image/jpeg")}
         )
     else:
         sent_res = telegram_api_request(
             token,
             "sendMessage",
-            data={"chat_id": chat_id, "text": caption}
+            data={
+                "chat_id": chat_id,
+                "text": caption,
+                "reply_markup": reply_markup
+            }
         )
 
+    # 語音漂流瓶 (Voice Note) 生成與推播
+    voice_sent = False
+    voice_text = getattr(args, "voice_text", None) or (args.message if getattr(args, "voice", False) else None)
+    if voice_text:
+        voice_path = PROJECT_ROOT / "videos" / "assets" / "voice_temp.ogg"
+        ogg_file = generate_voice_ogg(voice_text, voice_path, config)
+        if ogg_file and os.path.exists(ogg_file):
+            with open(ogg_file, "rb") as vf:
+                v_bytes = vf.read()
+            v_res = telegram_api_request(
+                token,
+                "sendVoice",
+                data={"chat_id": chat_id, "caption": "🎙️ 小鯨的語音漂流瓶"},
+                files={"voice": ("voice.ogg", v_bytes, "audio/ogg")}
+            )
+            voice_sent = True
+            try:
+                Path(ogg_file).unlink()
+            except Exception:
+                pass
+
     state["daily_stats"]["telegram_pings_count"] += 1
+    update_mood(state, d_affection=3.0)
     save_state(state)
-    return {"success": True, "result": sent_res}
+    render_dashboard(config, state)
+    return {"success": True, "result": sent_res, "voice_sent": voice_sent}
 
 
 # -------------------------------------------------------------
@@ -1196,10 +1468,12 @@ def cmd_record(args):
         )
 
     save_state(state)
+    render_dashboard(config, state)
     return {
         "success": True,
         "total_watched_count": len(watched),
-        "daily_stats": state["daily_stats"]
+        "daily_stats": state["daily_stats"],
+        "current_mood": state.get("mood_state", {}).get("current_mood")
     }
 
 
@@ -1230,6 +1504,8 @@ def main():
     p_notify.add_argument("--score", type=float, required=True, help="評分")
     p_notify.add_argument("--message", type=str, required=True, help="推薦理由")
     p_notify.add_argument("--photo", type=str, help="關鍵幀截圖路徑")
+    p_notify.add_argument("--voice", action="store_true", help="同時將推薦語合成為 Telegram 語音漂流瓶發送")
+    p_notify.add_argument("--voice-text", type=str, help="指定自訂語音口播文案")
     p_notify.add_argument("--force", action="store_true", help="忽略每日次數限制")
 
     # record
