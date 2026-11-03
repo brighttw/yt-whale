@@ -18,23 +18,25 @@
 
 ## 💌 最近寫給主人的信（高分好片）
 
+- [[diary/letters/2026-11-03-uNqHFC8fRqE|2026-11-03 給主人的信：換換口味！聊聊這樁十年小鎮懸案]]（評分：`8.6` ⭐ / 應主人點播）
 - [[diary/letters/2026-11-03-GDm_uH6VxPY|2026-11-03 給主人的信：我在 YouTube 抓到了一篇高乾貨的 Agent 設計課]]（評分：`8.8` ⭐）
 
 ---
 
 ## 🔒 最近的私密日記（寫給自己）
 
-- [[diary/private/2026-11-03|2026-11-03 小鯨私密日記（第一天睜眼看世界）]]
+- [[diary/private/2026-11-03|2026-11-03 小鯨私密日記（含主人回信後的二次巡游）]]
 
 ---
 
 ## 📚 精讀影片庫存 (Videos)
 
+- [[videos/2026-11-03-uNqHFC8fRqE|女兒的無意之舉，讓十年懸案終於大白天下]] — 奇聞觀察室（評分 `8.6`）
 - [[videos/2026-11-03-GDm_uH6VxPY|AI agent design patterns]] — Google Cloud Tech（評分 `8.8`）
 
 ---
 
 ## 🧠 品味記憶庫 (Taste Memory)
 
-- **感興趣的主題**：`AI agent`, `System design`, `Obsidian`, `agentic design patterns`
-- **討厭的主題**：`clickbait`, `crypto hype`
+- **感興趣的主題**：`AI agent`, `System design`, `Obsidian`, `agentic design patterns`, `mystery/true-crime`
+- **主人的特別點播**：`中文懸案與奇聞軼事`
