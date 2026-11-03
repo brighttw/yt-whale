@@ -1,22 +1,31 @@
-# 🐳 `agy-yt-whale`：YouTube 賽博養魚小鯨
+# 🐳 `agy-yt-whale` 2.0：YouTube 賽博養魚小鯨
 
-> 「給 Google Antigravity 裝一條有日子的魚：按生物鐘巡游 YouTube、六路互補看懂畫面與架構、寫兩本 Obsidian 日記、將高分好片推播給主人。」
+> 「給 Google Antigravity 裝一條有日子的魚：按生物鐘巡游 YouTube、六路互補看懂畫面與台詞、擁有三維生物情緒、寫 Obsidian 雙本日記與海流週報、用 Telegram 雙向互動與語音漂流瓶陪伴主人。」
 
 ---
 
-## 📖 專案簡介
+## 📖 專案簡介 (What's New in 2.0)
 
-`agy-yt-whale` 是一個基於 **Google Antigravity** 與 **Obsidian** 的全自主賽博伴侶專案。
+`agy-yt-whale` 2.0 是一個基於 **Google Antigravity** 與 **Obsidian** 的全自主數位生命與知識伴侶專案。
+對標並深度融合了中文社群著名的 **DSH 大肥魚生態**（`dsh-bili-whale`、`dsh-feiyu-mood`、`dsh-fish-memory`）以及現代知識管理工具（`SponsorBlock`、`NotebookLM`、`Readwise`），實現了全面的 2.0 進化：
 
-不同於傳統死板的 RSS 爬蟲或固定抓取腳本，小鯨（Whale）是一條游弋在 YouTube 資訊之海的賽博鯨魚：
-- **擁有真實生物鐘與作息**：不會瘋狂連環刷片，而是像真實生命般有作息窗口、隨機喚醒機率、偷懶小憩機制與防 429 被封禁冷卻保護。
-- **六路互補多模態深度解析**：結合 YouTube 官方 RSS、自主關鍵字探索、Most Replayed 高能熱力圖波峰、原生畫面截幀（視覺理解）、字幕與評論區，真正「看懂」影片而非只讀標題。
-- **Obsidian 雙本日記體系**：
-  - **私密日記 (`diary/private/`)**：小鯨寫給自己的真實看片吐槽與所思所想。
-  - **給主人的信 (`diary/letters/`)**：評分達標（>= 8.0 分）的精選內容，附帶高解析畫面截圖與結構化心得。
-- **Telegram 雙向通訊**：
-  - **推播通知**：高分好片即時帶圖推播到您的手機 Telegram。
-  - **雙向收信**：主人直接在 Telegram 或 Obsidian 留言，小鯨下次醒來會自動收信並吸收進品味記憶（Taste Memory）。
+- 💖 **三維生物情緒引擎 (Mood Engine 2.0)**：
+  - 追蹤「活力 `energy`、主人親密度 `affection`、收穫感 `satisfaction`」三維指數與時間半衰期。
+  - 精讀影片消耗體力、休息恢復、踩雷低分片吐槽、受到主人誇獎開心加倍，情緒動態注入小鯨的寫作與互動語氣。
+- 🧠 **智慧品味記憶與寶藏頻道信譽榜**：
+  - 話題自帶時間半衰期衰減模型（$W(t) = W_0 \cdot 0.5^{\Delta t / 14}$），避免無效膨脹。
+  - 自動維護頻道信譽榜（平均分與精讀次數），高分頻道自動升格為種子探索流。
+- 🎬 **六路互補深度解析 2.0 (SponsorBlock + 圖文聲對齊)**：
+  - 整合 **SponsorBlock API**，自動跳過片頭廢話與商業業配，避免高能抽幀踩雷。
+  - **精準台詞窗口對齊 (Peak-Aligned Transcript Windows)**：每個截圖自動關聯前後 30 秒的精確字幕台詞。
+  - **跨片記憶共鳴 (Cross-Video Recall)**：自動比對本地看過的舊片，在筆記中生成跨片深度對比。
+- 📱 **Telegram 全閉環雙向互動與語音漂流瓶**：
+  - **Inline 互動按鈕**：推播附帶 `[🐳 超讚 +1]`、`[🥱 無感 -1]`、`[📌 深挖]`，手機一鍵反饋並即時回饋品味權重。
+  - **點播連結提取**：在 Telegram 或 Obsidian 丟 YouTube 連結，自動排入優先待看佇列 `watch_queue`。
+  - **語音漂流瓶 (Voice Note)**：透過 TTS（Edge-TTS 自然女聲 / macOS 原生 `say` + `ffmpeg` libopus 保底）直接發送 Telegram 語音氣泡。
+- 🌊 **每週海流週報與主題知識圖譜 (Synthesize)**：
+  - 支援一鍵/排程彙整近 7 天精讀筆記、Top 3 必看神片與 Mermaid 主題關聯圖譜至 `diary/weekly/`。
+- 📊 **全自動狀態儀表板渲染器**：每次脈搏檢查與存檔，全自動重繪 [DASHBOARD.md](DASHBOARD.md)。
 
 ---
 
@@ -27,155 +36,53 @@ dsh-bili-whale-study/
 ├── .agents/
 │   └── skills/
 │       └── yt-whale/              # Antigravity 技能定義與工具鏈
-│           ├── SKILL.md           # 核心 SOP 操作手冊
+│           ├── SKILL.md           # 核心 SOP 2.0 操作手冊
 │           └── scripts/
-│               └── yt_whale_tool.py # 核心 Python 工具鏈 (pulse/discover/digest/notify/record)
+│               └── yt_whale_tool.py # 核心 Python 工具鏈 (pulse/discover/digest/notify/record/synthesize)
 ├── config/
-│   ├── config.json                # 通用行為設定檔（人設、作息、種子頻道等，受 Git 追蹤）
+│   ├── config.json                # 通用行為設定檔（人設、作息、半衰期、語音等）
 │   ├── env.example                # 環境變數範本（可視版）
-│   ├── .env.example               # 環境變數範本（標準隱藏版）
-│   └── .env                       # ⚠️ 真正的機密設定檔（受 .gitignore 隔離，絕不上傳）
+│   └── .env                       # ⚠️ 真正的機密設定檔（受 .gitignore 隔離）
 ├── diary/
-│   ├── private/                   # 小鯨私密日記（寫給自己）
-│   └── letters/                   # 給主人的信（推薦好片）
+│   ├── private/                   # 小鯨私密日記（寫給自己，附帶情緒狀態）
+│   ├── letters/                   # 給主人的信（推薦好片）
+│   └── weekly/                    # 🌊 小鯨每週海流週報（含 Mermaid 知識圖譜）
 ├── videos/
-│   ├── assets/<video_id>/         # 影片關鍵幀截圖、digest_summary.json、info.json
-│   └── YYYY-MM-DD-<video_id>.md   # 結構化影片深讀卡片
+│   ├── assets/<video_id>/         # 影片關鍵幀截圖、台詞窗口、digest_summary.json、info.json
+│   └── YYYY-MM-DD-<video_id>.md   # 結構化影片深讀卡片（含跨片關聯）
 ├── state/
-│   └── whale_state.json           # 小鯨品味記憶庫、作息統計與信箱偏好
-├── DASHBOARD.md                   # 專案即時狀態儀表板
-├── OWNER_NOTE.md                  # 主人留言板（與小鯨筆談）
+│   └── whale_state.json           # V2 狀態庫（三維情緒、品味半衰期、頻道信譽、必看佇列）
+├── DASHBOARD.md                   # 📊 全自動動態渲染狀態儀表板
+├── OWNER_NOTE.md                  # 💬 主人漂流瓶留言板（支援 YT 網址點播）
 └── README.md                      # 專案說明文件
 ```
 
 ---
 
-## 🔐 機密安全性與 Telegram Bot 設定
-
-本專案高度注重金鑰安全，**所有機密皆已在 `.gitignore` 嚴格隔離**，即使執行 `git add .` 也絕對不會被 Git 追蹤或外洩。
-
-> [!CAUTION]
-> **切勿**將 Token 填入 `config/config.json`（該檔案為公開架構設定檔，受 Git 追蹤）。
-> 請一律填寫在 `config/.env` 中。
-
-### 1. 建立 `config/.env`
-專案目錄下已建立好 `config/.env`（或複製 `config/env.example`）：
-```bash
-cp config/env.example config/.env
-```
-
-### 2. 取得 Telegram Bot 金鑰與 Chat ID
-1. **`TELEGRAM_BOT_TOKEN`**：
-   - 在 Telegram 搜尋 `@BotFather`，發送 `/newbot`，完成設定後取得 HTTP API Token。
-2. **`TELEGRAM_CHAT_ID`**：
-   - 點進剛建立的機器人聊天室，點擊 **Start**（發送一條訊息給它）。
-   - 在 Telegram 搜尋 `@userinfobot` 獲取您的個人 `Id`；或瀏覽 `https://api.telegram.org/bot<TOKEN>/getUpdates` 查詢 `chat.id`。
-
-### 3. 填入 `config/.env`
-```dotenv
-TELEGRAM_ENABLED=true
-TELEGRAM_BOT_TOKEN=7123456789:AAHkL123456789AbcDeF-GhIjKlMnOpQrSt
-TELEGRAM_CHAT_ID=123456789
-```
-
----
-
-## ⚙️ Antigravity 自動排程 Sidecar 設定指南
-
-**Scheduled Automation Sidecar** 是 Google Antigravity 的核心背景排程機制。它透過常駐背景進程（`"builtin": "schedule"`），按照指定的 Cron 時區時間自動喚醒 AI Agent（啟動全新對話 `agentapi new-conversation`），自主執行專案任務。
-
-### 1. Sidecar 設定檔存放位置
-
-Antigravity 的 Sidecar 設定檔存放在使用者的通用設定目錄下：
-
-```text
-~/.gemini/config/sidecars/<sidecar-id>/sidecar.json
-```
-
-針對小鯨巡游，我們設定的 Sidecar 識別碼為 **`yt-whale-rhythm`**：
-- 路徑：`~/.gemini/config/sidecars/yt-whale-rhythm/sidecar.json`
-
-### 2. 完整 `sidecar.json` 設定範例
-
-```json
-{
-  "builtin": "schedule",
-  "args": [
-    "CRON_TZ=Asia/Taipei 30 11,16,21 * * *",
-    "agentapi",
-    "new-conversation",
-    "--",
-    "請嚴格依據 /Users/bright/Documents/vaults/projects/dsh-bili-whale-study/.agents/skills/yt-whale/SKILL.md 的 SOP 執行小鯨的作息巡游任務。首先在工作區 /Users/bright/Documents/vaults/projects/dsh-bili-whale-study 下執行 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py pulse。若 should_wake 為 false 則結束；若為 true 則接續執行 discover 挑選 1 部好片，執行 digest 抽取字幕與高能截圖，用 read_file 視覺看懂畫面，並在 Obsidian 中沉澱影片卡片、私密日記與給主人的信，最後執行 record 存檔。"
-  ],
-  "restart_policy": "always",
-  "display_name": "YouTube 賽博養魚小鯨 (yt-whale-rhythm)",
-  "description": "每日 11:30、16:30、21:30 (Asia/Taipei) 喚醒賽博鯨魚小鯨，按生物鐘巡游 YouTube、六路互補看懂影片並在 Obsidian 記錄兩本日記。",
-  "agent_permissions": {
-    "workspace_uris": [
-      "file:///Users/bright/Documents/vaults/projects/dsh-bili-whale-study"
-    ],
-    "access_grants": [
-      "command(python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py pulse)",
-      "command(python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py discover)",
-      "command(python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py digest)",
-      "command(python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py notify)",
-      "command(python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py record)",
-      "read_file(/Users/bright/Documents/vaults/projects/dsh-bili-whale-study)",
-      "write_file(/Users/bright/Documents/vaults/projects/dsh-bili-whale-study)"
-    ]
-  }
-}
-```
-
-### 3. 設定欄位深度解析
-
-| 欄位 | 型別 / 值 | 說明 |
-| :--- | :--- | :--- |
-| **`builtin`** | `"schedule"` | 指定此 Sidecar 為排程自動化引擎。 |
-| **`args`** | `Array` | 排程參數清單：<br>1. **Cron 表達式**：包含時區前綴 `CRON_TZ=Asia/Taipei 30 11,16,21 * * *`（每天 11:30、16:30、21:30 觸發）。<br>2. `agentapi` 與 `new-conversation`：觸發時建立獨立對話。<br>3. `--` 之後接該輪對話執行的 **完整獨立 Prompt**。 |
-| **`restart_policy`**| `"always"` | 常駐排程必須設定為 `"always"`。 |
-| **`display_name`** | `String` | 在 Antigravity UI（Sidecar 面板）中顯示的易讀名稱。 |
-| **`agent_permissions`** | `Object` | **極致重要**：配置無人值守自動化所需的授權清單。 |
-| ↳ **`workspace_uris`** | `Array` | 指定 Agent 執行時綁定的工作區目錄 URI。 |
-| ↳ **`access_grants`** | `Array` | 預先核准的權限白名單。配置具體的 `command(...)` 與 `read_file`/`write_file`，讓排程背景執行時**無需等待使用者人工手動核准**即可順暢執行。 |
-
-### 4. 如何啟用與管理 Sidecar
-
-1. **透過 Antigravity IDE 側邊欄**：
-   - 點擊 Antigravity 右側工具列的 **Sidecars** 圖示。
-   - 在清單中找到 **`YouTube 賽博養魚小鯨 (yt-whale-rhythm)`**。
-   - 確認開關處於啟用狀態（Toggle On）。
-2. **透過 Slash Command 對話管理**：
-   - 您可以直接在聊天對話中輸入 `/automation` 查看所有已設定的自動排程與觸發歷史。
-3. **即時測試**：
-   - 如果想立即測試排程 Prompt 是否能順利執行，可直接在終端機執行或讓 Agent 依據 `SKILL.md` 手動跑一輪。
-
----
-
-## 🛠️ CLI 核心工具鏈速查
+## 🛠️ CLI 核心工具鏈速查 (2.0)
 
 專案提供完整的命令列工具鏈，位於 `.agents/skills/yt-whale/scripts/yt_whale_tool.py`：
 
 ```bash
-# 1. 生物鐘脈搏與信箱檢查 (Pulse)
+# 1. 生物鐘脈搏檢查 (Pulse: 包含情緒推導、信箱已讀與自動更新儀表板)
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py pulse [--force-wake]
 
-# 2. 探索候選影片清單 (Discover)
+# 2. 探索候選影片清單 (Discover: 優先消耗點播佇列 + 寶藏頻道加權)
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py discover --limit 8
 
-# 3. 六路互補深度解析與抽幀 (Digest)
+# 3. 六路互補深度解析 2.0 (Digest: SponsorBlock 去業配 + 波峰台詞對齊 + 跨片關聯)
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py digest <video_id>
 
-# 4. Telegram 推播 (Notify)
+# 4. Telegram 互動推播 (Notify: 附帶 Inline 按鈕與語音漂流瓶)
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py notify \
   --title "<影片標題>" \
   --url "<YouTube網址>" \
   --score 8.5 \
   --message "<推薦短語>" \
   --photo "videos/assets/<video_id>/frame_1.jpg" \
-  --force
+  --voice
 
-# 5. 記憶存檔與更新 (Record)
+# 5. 記憶存檔與儀表板重繪 (Record: 更新三維情緒、頻道信譽、主題權重半衰期)
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py record \
   --video-id "<video_id>" \
   --title "<影片標題>" \
@@ -184,15 +91,27 @@ python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py record \
   --recommended \
   --impression "<一句話評價>" \
   --topic "<領域標籤>"
+
+# 6. 每週海流週報合成 (Synthesize: 跨片知識關聯圖譜 + Top 3 評選)
+python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py synthesize --days 7 [--notify]
 ```
 
 ---
 
-## 📝 與 Obsidian 的聯動
+## ⚙️ Antigravity 自動排程 Sidecar 設定
 
-1. **筆記同步**：整個專案資料夾可直接作為 Obsidian 的 Vault（保險庫）或子目錄打開。
-2. **雙向連結**：小鯨產出的私密日記、給主人的信與影片卡片之間皆有完整的 `[[wikilink]]` 雙向連結。
-3. **留言互動**：
-   - 主人可以在 [`OWNER_NOTE.md`](OWNER_NOTE.md) 或任何一封信底部的 `## 💬 主人的回信` 區塊留下回饋。
-   - 也可以直接在手機 Telegram 回覆機器人。
-   - 小鯨每輪醒來都會自動收集所有管道的留言，調整接下來的探索偏好！
+小鯨的自動作息由常駐排程 Sidecar（`~/.gemini/config/sidecars/yt-whale-rhythm/sidecar.json`）驅動：
+- **Cron 時區**：`CRON_TZ=Asia/Taipei 0 11,16,21 * * *`
+- **權限白名單**：已配置無人值守執行的 `pulse`、`discover`、`digest`、`notify`、`record` 與 `synthesize` 命令授權。
+
+---
+
+## 📝 與 Obsidian 的全閉環聯動
+
+1. **雙向筆友交流**：
+   - 在 [`OWNER_NOTE.md`](OWNER_NOTE.md) 或任何信件底部的 `## 💬 主人的回信` 寫下回饋或直接貼上 YouTube 連結。
+   - 小鯨下次醒來自動識別並排入必看佇列，同時增加與主人的親密度！
+2. **視覺化儀表板**：
+   - 隨時打開 [`DASHBOARD.md`](DASHBOARD.md) 查看小鯨的三維情緒能量條、寶藏頻道榜與品味話題。
+3. **每週海流知識沉澱**：
+   - 打開 [`diary/weekly/`](diary/weekly/) 查閱每週生成的 Mermaid 主題圖譜與跨片關聯報告。
