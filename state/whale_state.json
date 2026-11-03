@@ -1,10 +1,10 @@
 {
-  "last_pulse_time": "2026-11-03T10:05:57.003773",
+  "last_pulse_time": "2026-11-03T10:31:09.291964",
   "daily_stats": {
     "date": "2026-11-03",
-    "wakes_count": 3,
-    "deep_reads_count": 2,
-    "telegram_pings_count": 0
+    "wakes_count": 6,
+    "deep_reads_count": 3,
+    "telegram_pings_count": 1
   },
   "telegram_offset": 0,
   "owner_inbox": [
@@ -42,6 +42,15 @@
       "recommended": true,
       "impression": "奇聞觀察室經典十年懸案，邏輯嚴密，無字幕多模態硬字幕成功看懂",
       "watched_at": "2026-11-03T10:08:55.495529"
+    },
+    {
+      "video_id": "4fLVq6HJsKc",
+      "title": "DeepSeek Solved AI’s Memory Problem",
+      "channel": "Two Minute Papers",
+      "score": 8.5,
+      "recommended": true,
+      "impression": "DeepSeek 視覺 Token 壓縮長文本長記憶架構，角度新穎",
+      "watched_at": "2026-11-03T10:38:05.919057"
     }
   ],
   "taste_memory": {
@@ -50,7 +59,8 @@
       "System design",
       "Obsidian",
       "agentic design patterns",
-      "mystery/true-crime"
+      "mystery/true-crime",
+      "ai/memory"
     ],
     "disliked_topics": [
       "clickbait",
@@ -62,7 +72,8 @@
   "obsidian_read_state": {
     "owner_note_mtime": 1793671228.889796,
     "processed_letters": {
-      "2026-11-03-GDm_uH6VxPY.md": 1793671519.8820558
+      "2026-11-03-GDm_uH6VxPY.md": 1793671519.8820558,
+      "2026-11-03-uNqHFC8fRqE.md": 1793671728.4802864
     }
   }
 }

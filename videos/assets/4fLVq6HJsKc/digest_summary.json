@@ -1,0 +1,90 @@
+{
+  "video_id": "4fLVq6HJsKc",
+  "url": "https://www.youtube.com/watch?v=4fLVq6HJsKc",
+  "title": "DeepSeek Solved AI’s Memory Problem",
+  "channel": "Two Minute Papers",
+  "duration_seconds": 337,
+  "duration_str": "5分37秒",
+  "chapters": null,
+  "has_subtitles": false,
+  "transcript_snippet": "無字幕軌道",
+  "peak_times": [
+    "00:50",
+    "02:14",
+    "03:39",
+    "04:46"
+  ],
+  "captured_frames": [
+    {
+      "index": 1,
+      "timestamp": 50,
+      "time_str": "00:50",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/4fLVq6HJsKc/frame_1.jpg",
+      "relative_path": "videos/assets/4fLVq6HJsKc/frame_1.jpg",
+      "source": "native_hd_stream"
+    },
+    {
+      "index": 2,
+      "timestamp": 134,
+      "time_str": "02:14",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/4fLVq6HJsKc/frame_2.jpg",
+      "relative_path": "videos/assets/4fLVq6HJsKc/frame_2.jpg",
+      "source": "native_hd_stream"
+    },
+    {
+      "index": 3,
+      "timestamp": 219,
+      "time_str": "03:39",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/4fLVq6HJsKc/frame_3.jpg",
+      "relative_path": "videos/assets/4fLVq6HJsKc/frame_3.jpg",
+      "source": "native_hd_stream"
+    },
+    {
+      "index": 4,
+      "timestamp": 286,
+      "time_str": "04:46",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/4fLVq6HJsKc/frame_4.jpg",
+      "relative_path": "videos/assets/4fLVq6HJsKc/frame_4.jpg",
+      "source": "native_hd_stream"
+    }
+  ],
+  "comments_highlight": [
+    {
+      "author": "@Madhav2609",
+      "text": "i dont miss a single video from this channel",
+      "likes": 236,
+      "has_timestamp": false
+    },
+    {
+      "author": "@why-should-you-vote",
+      "text": "Can it fix the CCP problem?😭✌🥀",
+      "likes": 1,
+      "has_timestamp": false
+    },
+    {
+      "author": "@turnedcoat",
+      "text": "not every video, our boy two minutes is way to optimistic sometimes",
+      "likes": 1,
+      "has_timestamp": false
+    },
+    {
+      "author": "@hollohill",
+      "text": "Haven't watched this channel in 2 years and I can say the same thing.",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@xanderdevelops",
+      "text": " @Madhav2609  same",
+      "likes": 1,
+      "has_timestamp": false
+    },
+    {
+      "author": "@SleekDiamond41",
+      "text": " @Madhav2609  that is supportive now, but if the channel gets taken down it’s suddenly incredibly mean",
+      "likes": 1,
+      "has_timestamp": false
+    }
+  ],
+  "assets_directory": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/4fLVq6HJsKc"
+}
