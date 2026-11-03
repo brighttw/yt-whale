@@ -8,6 +8,10 @@ config/.env.*
 !.env.example
 !config/.env.example
 
+# OS 產生的隱藏暫存檔
+.DS_Store
+Thumbs.db
+
 # Python 暫存檔
 __pycache__/
 *.pyc
