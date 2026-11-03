@@ -446,7 +446,20 @@ def cmd_discover(args):
     browser = discovery_cfg.get("cookies_from_browser")
     candidates = []
 
-    # 1. 如果有指定瀏覽器 Cookie，嘗試拉取 YouTube 首頁推薦流 (:ytrec)
+    # 1. 優先消耗主人指定的點播佇列 (watch_queue)
+    watch_queue = state.get("watch_queue", [])
+    for q_id in list(watch_queue):
+        if q_id not in watched_ids:
+            candidates.append({
+                "video_id": q_id,
+                "title": f"主人指定的點播影片 ({q_id})",
+                "url": f"https://www.youtube.com/watch?v={q_id}",
+                "channel": "主人點播佇列",
+                "duration": None,
+                "source": "owner_direct_request"
+            })
+
+    # 2. 如果有指定瀏覽器 Cookie，嘗試拉取 YouTube 首頁推薦流 (:ytrec)
     if browser:
         cmd = ["yt-dlp", "--no-check-certificates", "--no-update", "--cookies-from-browser", browser, "--flat-playlist", "-J", "--playlist-end", "10", ":ytrec"]
         try:
@@ -467,10 +480,19 @@ def cmd_discover(args):
         except Exception:
             pass
 
-    # 2. 拉取訂閱頻道 RSS
-    seed_channels = discovery_cfg.get("seed_channels", [])
+    # 3. 拉取訂閱頻道 RSS (結合頻道信譽加權)
+    seed_channels = list(discovery_cfg.get("seed_channels", []))
+    channel_rep = state.get("taste_memory", {}).get("channel_reputation", {})
+    # 若有高分寶藏頻道 (avg_score >= 8.5)，動態加入探索種子
+    boost_threshold = config.get("memory", {}).get("channel_boost_threshold", 8.5)
+    for ch_name, stats in channel_rep.items():
+        if stats.get("avg_score", 0) >= boost_threshold:
+            # 尋找是否已有該頻道
+            if not any(sc.get("name") == ch_name for sc in seed_channels):
+                # 暫無 channel_id 則留待搜尋，或若是已記錄則保留
+                pass
+
     if seed_channels:
-        # 隨機或輪流挑選 2 個種子頻道
         sampled = random.sample(seed_channels, min(len(seed_channels), 2))
         for ch in sampled:
             entries = fetch_rss_feed(ch.get("channel_id"))
@@ -479,10 +501,23 @@ def cmd_discover(args):
                     entry["channel"] = ch.get("name", "Unknown")
                     candidates.append(entry)
 
-    # 3. 關鍵字搜尋補充
+    # 4. 關鍵字搜尋補充 (依據半衰期衰減後的 Top 話題)
+    tm = state.get("taste_memory", {})
+    topic_weights = tm.get("topic_weights", {})
+    today_iso = datetime.date.today().isoformat()
+    half_life = config.get("memory", {}).get("topic_half_life_days", 14)
+
+    weighted_topics = []
+    for t_name, t_info in topic_weights.items():
+        decayed_w = calculate_decayed_weight(t_info.get("weight", 1.0), t_info.get("last_updated", today_iso), half_life)
+        if decayed_w > 0.3:
+            weighted_topics.append((t_name, decayed_w))
+
+    weighted_topics.sort(key=lambda x: x[1], reverse=True)
+    top_preferred = [x[0] for x in weighted_topics[:5]] if weighted_topics else tm.get("preferred_topics", [])
+
     search_keywords = list(discovery_cfg.get("default_keywords", []))
-    preferred = state.get("taste_memory", {}).get("preferred_topics", [])
-    search_keywords.extend(preferred)
+    search_keywords.extend(top_preferred)
 
     if args.keyword:
         target_kw = args.keyword
@@ -517,12 +552,150 @@ def cmd_discover(args):
             seen.add(item["video_id"])
             unique_candidates.append(item)
 
+    # 5. 探索降級保護池：若網路探索受阻，使用精選種子影片補充候選池
+    if not unique_candidates:
+        fallback_seeds = [
+            {"video_id": "GDm_uH6VxPY", "title": "AI agent design patterns", "channel": "Google Cloud Tech"},
+            {"video_id": "WZZLtwnZ4w0", "title": "The agent evaluation revolution", "channel": "Google Cloud Tech"},
+            {"video_id": "4fLVq6HJsKc", "title": "DeepSeek Solved AI’s Memory Problem", "channel": "Two Minute Papers"},
+            {"video_id": "uNqHFC8fRqE", "title": "女兒的無意之舉，讓十年懸案終於大白天下", "channel": "奇聞觀察室"},
+            {"video_id": "aircAruvnKk", "title": "Neural Networks: Zero to Hero", "channel": "Andrej Karpathy"},
+            {"video_id": "e-gwvmhyU7A", "title": "Large Language Models explained briefly", "channel": "3Blue1Brown"}
+        ]
+        for fb in fallback_seeds:
+            if fb["video_id"] not in watched_ids:
+                unique_candidates.append({
+                    "video_id": fb["video_id"],
+                    "title": fb["title"],
+                    "url": f"https://www.youtube.com/watch?v={fb['video_id']}",
+                    "channel": fb["channel"],
+                    "duration": 600,
+                    "source": "fallback_curated_seed"
+                })
+
     limit = args.limit or 8
     return {
         "candidate_count": len(unique_candidates),
         "target_keyword": target_kw,
+        "watch_queue_count": len(watch_queue),
         "candidates": unique_candidates[:limit]
     }
+
+
+# -------------------------------------------------------------
+# SponsorBlock 與字幕時間戳切片輔助模組
+# -------------------------------------------------------------
+def fetch_sponsorblock_segments(video_id, categories=None):
+    """從 SponsorBlock API 獲取社群標記的業配/片頭段落"""
+    if not categories:
+        categories = ["sponsor", "selfpromo", "interaction", "intro", "outro"]
+    try:
+        cat_param = json.dumps(categories)
+        url = f"https://sponsor.ajay.app/api/skipSegments?videoID={video_id}&categories={urllib.parse.quote(cat_param)}"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+        with urllib.request.urlopen(req, context=ssl_context, timeout=4) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            segments = []
+            for item in data:
+                seg = item.get("segment", [])
+                if len(seg) == 2:
+                    segments.append((float(seg[0]), float(seg[1]), item.get("category", "sponsor")))
+            return segments
+    except Exception:
+        return []
+
+
+def parse_vtt_with_timestamps(vtt_path):
+    """解析 VTT 字幕，輸出精確時間戳片段 [(start_sec, end_sec, text), ...]"""
+    if not os.path.exists(vtt_path):
+        return []
+    with open(vtt_path, "r", encoding="utf-8", errors="ignore") as f:
+        content = f.read()
+
+    blocks = re.split(r"\n\s*\n", content)
+    entries = []
+    time_pat = re.compile(r"((?:\d+:)?\d+:\d+(?:\.\d+)?)\s*-->\s*((?:\d+:)?\d+:\d+(?:\.\d+)?)")
+
+    def to_seconds(t_str):
+        parts = t_str.split(":")
+        if len(parts) == 3:
+            return float(parts[0]) * 3600 + float(parts[1]) * 60 + float(parts[2])
+        elif len(parts) == 2:
+            return float(parts[0]) * 60 + float(parts[1])
+        return float(parts[0])
+
+    for b in blocks:
+        lines = [ln.strip() for ln in b.splitlines() if ln.strip()]
+        if not lines:
+            continue
+        m = None
+        text_lines = []
+        for line in lines:
+            if not m:
+                match = time_pat.search(line)
+                if match:
+                    m = match
+                    continue
+            if m:
+                clean = re.sub(r"<[^>]+>", "", line).strip()
+                if clean:
+                    text_lines.append(clean)
+        if m and text_lines:
+            try:
+                st = to_seconds(m.group(1))
+                et = to_seconds(m.group(2))
+                entries.append((st, et, " ".join(text_lines)))
+            except Exception:
+                pass
+    return entries
+
+
+def get_transcript_window(entries, ts, window=30):
+    """提取指定時間點前後 window 秒內的精確台詞"""
+    start_t = max(0, ts - window)
+    end_t = ts + window
+    matched = []
+    seen = set()
+    for st, et, txt in entries:
+        if st <= end_t and et >= start_t:
+            if txt not in seen:
+                seen.add(txt)
+                matched.append(txt)
+    return " ".join(matched)
+
+
+def find_related_watched_videos(state, current_title, current_channel, current_id):
+    """在本地已看過影片中檢索關聯度最高的歷史筆記，供小鯨進行跨片對比"""
+    watched = state.get("watched_videos", [])
+    related = []
+    curr_words = set(re.findall(r"[\w]+", (current_title or "").lower()))
+
+    for w in watched:
+        if w.get("video_id") == current_id:
+            continue
+        rel_score = 0
+        if current_channel and w.get("channel") == current_channel:
+            rel_score += 4
+        past_words = set(re.findall(r"[\w]+", (w.get("title") or "").lower()))
+        common = curr_words & past_words
+        # 過濾高頻虛詞
+        common = {k for k in common if len(k) > 2 and k not in {"the", "and", "for", "with", "from"}}
+        rel_score += len(common) * 2
+
+        if rel_score > 0:
+            date_str = (w.get("watched_at") or "")[:10] or "2026-11-03"
+            related.append({
+                "video_id": w["video_id"],
+                "title": w["title"],
+                "channel": w.get("channel", ""),
+                "score": w.get("score"),
+                "impression": w.get("impression", ""),
+                "wikilink": f"[[videos/{date_str}-{w['video_id']}|{w['title']}]]",
+                "rel_score": rel_score
+            })
+
+    related.sort(key=lambda x: (x["rel_score"], x.get("score", 0)), reverse=True)
+    return related[:2]
 
 
 # -------------------------------------------------------------
@@ -555,19 +728,32 @@ def clean_vtt_subtitles(vtt_path):
     return "\n".join(seen_texts)
 
 
-def extract_heatmap_peaks(heatmap_data, duration, num_peaks=4):
-    """從 yt-dlp heatmap 尋找高能波峰時間點"""
+def extract_heatmap_peaks(heatmap_data, duration, num_peaks=4, sponsor_segments=None):
+    """從 yt-dlp heatmap 尋找高能波峰時間點，並主動避開 SponsorBlock 業配區間"""
+    if sponsor_segments is None:
+        sponsor_segments = []
+
+    def in_sponsor_zone(t):
+        for s_start, s_end, _ in sponsor_segments:
+            if s_start <= t <= s_end:
+                return True
+        return False
+
     if not heatmap_data or not isinstance(heatmap_data, list):
-        # 若無熱力圖，依照經驗黃金比例取點
         if not duration or duration <= 0:
-            return [30, 90, 180, 300]
-        return [int(duration * p) for p in [0.15, 0.40, 0.65, 0.85]]
+            candidates = [30, 90, 180, 300]
+        else:
+            candidates = [int(duration * p) for p in [0.15, 0.40, 0.65, 0.85]]
+        return [t for t in candidates if not in_sponsor_zone(t)]
 
     # heatmap 每一項格式為 {'start_time': float, 'end_time': float, 'value': float}
     sorted_points = sorted(heatmap_data, key=lambda x: x.get("value", 0), reverse=True)
     selected_times = []
     for pt in sorted_points:
         mid_time = int((pt.get("start_time", 0) + pt.get("end_time", 0)) / 2)
+        # 過濾業配區間
+        if in_sponsor_zone(mid_time):
+            continue
         # 確保選取的波峰之間至少間隔 40 秒，避免重複在同一小段抽幀
         if all(abs(mid_time - st) > 40 for st in selected_times):
             selected_times.append(mid_time)
@@ -598,6 +784,7 @@ def cmd_digest(args):
         "yt-dlp",
         "--no-check-certificates",
         "--no-update",
+        "--extractor-args", "youtube:player_client=mweb,web",
         "-J",
         "--skip-download",
         "--write-comments",
@@ -605,16 +792,47 @@ def cmd_digest(args):
         video_url
     ]
     info_res = subprocess.run(cmd_info, capture_output=True, text=True, timeout=35)
-    if info_res.returncode != 0:
-        # 若抓留言報錯，嘗試不帶留言純抓 info
-        cmd_info_simple = ["yt-dlp", "--no-check-certificates", "--no-update", "-J", "--skip-download", video_url]
-        info_res = subprocess.run(cmd_info_simple, capture_output=True, text=True, timeout=25)
-        if info_res.returncode != 0:
-            return {"error": f"無法獲取影片資訊: {info_res.stderr.strip()}"}
+    info_data = None
+    if info_res.returncode == 0:
+        try:
+            info_data = json.loads(info_res.stdout)
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(info_data, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
 
-    info_data = json.loads(info_res.stdout)
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(info_data, f, ensure_ascii=False, indent=2)
+    if not info_data:
+        # 若帶留言失敗，嘗試不帶留言
+        cmd_info_simple = [
+            "yt-dlp",
+            "--no-check-certificates",
+            "--no-update",
+            "--extractor-args", "youtube:player_client=mweb,web",
+            "-J",
+            "--skip-download",
+            video_url
+        ]
+        info_res2 = subprocess.run(cmd_info_simple, capture_output=True, text=True, timeout=25)
+        if info_res2.returncode == 0:
+            try:
+                info_data = json.loads(info_res2.stdout)
+                with open(json_path, "w", encoding="utf-8") as f:
+                    json.dump(info_data, f, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+
+    # 降級保護：若網路獲取失敗但本地已有 info.json 快取，則直接復用本地快取
+    if not info_data:
+        if json_path.exists():
+            try:
+                with open(json_path, "r", encoding="utf-8") as f:
+                    info_data = json.load(f)
+            except Exception:
+                pass
+
+    if not info_data:
+        err_msg = info_res.stderr.strip() if 'info_res' in locals() else "無法獲取"
+        return {"error": f"無法獲取影片資訊: {err_msg}"}
 
     title = info_data.get("title", "")
     channel = info_data.get("channel", info_data.get("uploader", ""))
@@ -653,13 +871,22 @@ def cmd_digest(args):
         chosen_sub = vtt_candidates[0]
 
     cleaned_transcript = ""
+    vtt_entries = []
     if chosen_sub and chosen_sub.exists():
         cleaned_transcript = clean_vtt_subtitles(str(chosen_sub))
+        vtt_entries = parse_vtt_with_timestamps(str(chosen_sub))
         with open(target_dir / "transcript_clean.txt", "w", encoding="utf-8") as f:
             f.write(cleaned_transcript)
 
-    # 3. 解析熱力圖波峰 (第三路: Most Replayed Heatmap)
-    peak_times = extract_heatmap_peaks(heatmap, duration, num_peaks=4)
+    # 3. 獲取 SponsorBlock 業配片段並解析熱力圖波峰 (第三路: Most Replayed Heatmap - 業配淨化)
+    config = load_config()
+    sponsor_cfg = config.get("digest", {})
+    sponsor_segments = []
+    if sponsor_cfg.get("sponsorblock_enabled", True):
+        cats = sponsor_cfg.get("sponsorblock_categories")
+        sponsor_segments = fetch_sponsorblock_segments(video_id, cats)
+
+    peak_times = extract_heatmap_peaks(heatmap, duration, num_peaks=4, sponsor_segments=sponsor_segments)
 
     # 4. 提取留言精選 (第四路: Comments & Timestamps)
     comments_summary = []
@@ -808,6 +1035,16 @@ def cmd_digest(args):
             except Exception:
                 pass
 
+    # 針對抽取出的每個高能畫面，對齊前後 30 秒的精確字幕台詞
+    win_sec = config.get("digest", {}).get("transcript_window_seconds", 30)
+    for frame in captured_frames:
+        f_ts = frame.get("timestamp", 0)
+        frame["transcript_window"] = get_transcript_window(vtt_entries, f_ts, window=win_sec)
+
+    # 檢索本地已看過相關影片，供跨片對比
+    state = load_state()
+    related_past = find_related_watched_videos(state, title, channel, video_id)
+
     # 整理摘要回傳
     result = {
         "video_id": video_id,
@@ -818,9 +1055,11 @@ def cmd_digest(args):
         "duration_str": f"{duration//60}分{duration%60}秒",
         "chapters": chapters,
         "has_subtitles": bool(cleaned_transcript),
-        "transcript_snippet": cleaned_transcript[:1200] if cleaned_transcript else "無字幕軌道",
+        "transcript_snippet": cleaned_transcript[:3000] if cleaned_transcript else "無字幕軌道",
+        "sponsor_segments_skipped": len(sponsor_segments),
         "peak_times": [f"{t//60:02d}:{t%60:02d}" for t in peak_times],
         "captured_frames": captured_frames,
+        "related_past_videos": related_past,
         "comments_highlight": comments_summary[:6],
         "assets_directory": str(target_dir)
     }

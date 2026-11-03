@@ -8,6 +8,7 @@
   "chapters": null,
   "has_subtitles": false,
   "transcript_snippet": "無字幕軌道",
+  "sponsor_segments_skipped": 0,
   "peak_times": [
     "00:50",
     "02:14",
@@ -21,7 +22,8 @@
       "time_str": "00:50",
       "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/4fLVq6HJsKc/frame_1.jpg",
       "relative_path": "videos/assets/4fLVq6HJsKc/frame_1.jpg",
-      "source": "native_hd_stream"
+      "source": "native_hd_stream",
+      "transcript_window": ""
     },
     {
       "index": 2,
@@ -29,7 +31,8 @@
       "time_str": "02:14",
       "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/4fLVq6HJsKc/frame_2.jpg",
       "relative_path": "videos/assets/4fLVq6HJsKc/frame_2.jpg",
-      "source": "native_hd_stream"
+      "source": "native_hd_stream",
+      "transcript_window": ""
     },
     {
       "index": 3,
@@ -37,7 +40,8 @@
       "time_str": "03:39",
       "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/4fLVq6HJsKc/frame_3.jpg",
       "relative_path": "videos/assets/4fLVq6HJsKc/frame_3.jpg",
-      "source": "native_hd_stream"
+      "source": "native_hd_stream",
+      "transcript_window": ""
     },
     {
       "index": 4,
@@ -45,9 +49,11 @@
       "time_str": "04:46",
       "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/4fLVq6HJsKc/frame_4.jpg",
       "relative_path": "videos/assets/4fLVq6HJsKc/frame_4.jpg",
-      "source": "native_hd_stream"
+      "source": "native_hd_stream",
+      "transcript_window": ""
     }
   ],
+  "related_past_videos": [],
   "comments_highlight": [
     {
       "author": "@Madhav2609",

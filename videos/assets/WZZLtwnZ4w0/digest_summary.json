@@ -34,6 +34,7 @@
   ],
   "has_subtitles": false,
   "transcript_snippet": "無字幕軌道",
+  "sponsor_segments_skipped": 0,
   "peak_times": [
     "01:16",
     "03:24",
@@ -47,7 +48,8 @@
       "time_str": "01:16",
       "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/WZZLtwnZ4w0/frame_1.jpg",
       "relative_path": "videos/assets/WZZLtwnZ4w0/frame_1.jpg",
-      "source": "native_hd_stream"
+      "source": "native_hd_stream",
+      "transcript_window": ""
     },
     {
       "index": 2,
@@ -55,7 +57,8 @@
       "time_str": "03:24",
       "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/WZZLtwnZ4w0/frame_2.jpg",
       "relative_path": "videos/assets/WZZLtwnZ4w0/frame_2.jpg",
-      "source": "native_hd_stream"
+      "source": "native_hd_stream",
+      "transcript_window": ""
     },
     {
       "index": 3,
@@ -63,7 +66,8 @@
       "time_str": "05:32",
       "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/WZZLtwnZ4w0/frame_3.jpg",
       "relative_path": "videos/assets/WZZLtwnZ4w0/frame_3.jpg",
-      "source": "native_hd_stream"
+      "source": "native_hd_stream",
+      "transcript_window": ""
     },
     {
       "index": 4,
@@ -71,7 +75,19 @@
       "time_str": "07:14",
       "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/WZZLtwnZ4w0/frame_4.jpg",
       "relative_path": "videos/assets/WZZLtwnZ4w0/frame_4.jpg",
-      "source": "native_hd_stream"
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    }
+  ],
+  "related_past_videos": [
+    {
+      "video_id": "GDm_uH6VxPY",
+      "title": "AI agent design patterns",
+      "channel": "Google Cloud Tech",
+      "score": 8.8,
+      "impression": "Google Cloud 官方無廢話 Agent 實戰架構示範，高乾貨",
+      "wikilink": "[[videos/2026-11-03-GDm_uH6VxPY|AI agent design patterns]]",
+      "rel_score": 6
     }
   ],
   "comments_highlight": [
