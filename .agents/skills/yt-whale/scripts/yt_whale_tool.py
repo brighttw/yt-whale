@@ -89,6 +89,69 @@ def check_daily_reset(state):
 
 
 # -------------------------------------------------------------
+# Obsidian 本地筆友回信模組 (支援 OWNER_NOTE.md 與信件底部回覆)
+# -------------------------------------------------------------
+OWNER_NOTE_FILE = PROJECT_ROOT / "OWNER_NOTE.md"
+LETTERS_DIR = PROJECT_ROOT / "diary" / "letters"
+
+
+def pull_obsidian_messages(state):
+    """從 Obsidian 筆記中拉取主人的回覆與點播"""
+    new_msgs = []
+    read_state = state.setdefault("obsidian_read_state", {"owner_note_mtime": 0, "processed_letters": {}})
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # 1. 檢查根目錄的 OWNER_NOTE.md (主人許願板/留言板)
+    if OWNER_NOTE_FILE.exists():
+        current_mtime = OWNER_NOTE_FILE.stat().st_mtime
+        if current_mtime > read_state.get("owner_note_mtime", 0):
+            try:
+                with open(OWNER_NOTE_FILE, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                # 簡單過濾模板說明文字，只提取主人寫的有效留言
+                lines = [line.strip() for line in content.splitlines() if line.strip() and not line.startswith("<!--") and not line.startswith("# ")]
+                if lines:
+                    new_msgs.append({
+                        "time": now_str,
+                        "source": "Obsidian (OWNER_NOTE.md)",
+                        "text": "\n".join(lines[-6:])  # 最新幾行
+                    })
+                read_state["owner_note_mtime"] = current_mtime
+            except Exception:
+                pass
+
+    # 2. 檢查 diary/letters/ 下每一封信件底部是否有「## 💬 主人的回信」
+    if LETTERS_DIR.exists():
+        processed_letters = read_state.setdefault("processed_letters", {})
+        for letter_file in LETTERS_DIR.glob("*.md"):
+            try:
+                file_mtime = letter_file.stat().st_mtime
+                last_mtime = processed_letters.get(letter_file.name, 0)
+                if file_mtime > last_mtime:
+                    with open(letter_file, "r", encoding="utf-8") as f:
+                        text = f.read()
+                    # 尋找回信標題
+                    match = re.search(r"##\s+(?:💬\s*)?(?:主人的?回信|主人回覆)(.*?)(?=$|\n##)", text, re.DOTALL | re.IGNORECASE)
+                    if match:
+                        reply_raw = match.group(1).strip()
+                        # 移除 HTML 註解 <!-- ... -->
+                        clean_reply = re.sub(r"<!--.*?-->", "", reply_raw, flags=re.DOTALL).strip()
+                        if clean_reply:
+                            new_msgs.append({
+                                "time": now_str,
+                                "source": f"Obsidian (diary/letters/{letter_file.name})",
+                                "text": clean_reply
+                            })
+                    processed_letters[letter_file.name] = file_mtime
+            except Exception:
+                pass
+
+    if new_msgs:
+        state.setdefault("owner_inbox", []).extend(new_msgs)
+    return new_msgs
+
+
+# -------------------------------------------------------------
 # Telegram 整合模組 (無狀態長輪詢與訊息推播)
 # -------------------------------------------------------------
 def telegram_api_request(token, method, params=None, data=None, files=None):
@@ -167,8 +230,10 @@ def cmd_pulse(args):
     now = datetime.datetime.now()
     state["last_pulse_time"] = now.isoformat()
 
-    # 1. 檢查 Telegram 是否有主人的新留言
+    # 1. 檢查主人的新留言 (雙通道: Obsidian 本地筆記 + Telegram 雲端信箱)
+    new_obsidian_msgs = pull_obsidian_messages(state)
     new_telegram_msgs = pull_telegram_messages(config, state)
+    all_new_msgs = new_obsidian_msgs + new_telegram_msgs
 
     # 2. 檢查風控冷卻期
     cooldown = state.get("cooldown_until")
@@ -189,7 +254,7 @@ def cmd_pulse(args):
     current_hour = now.hour
     if not (start_hour <= current_hour <= end_hour):
         # 不在作息窗口，但若主人有新留言，依然允許醒來回覆
-        if not new_telegram_msgs and not args.force_wake:
+        if not all_new_msgs and not args.force_wake:
             save_state(state)
             return {
                 "should_wake": False,
@@ -200,7 +265,7 @@ def cmd_pulse(args):
 
     # 4. 檢查每日看片上限
     max_deep_reads = rhythm.get("max_daily_deep_reads", 4)
-    if state["daily_stats"]["deep_reads_count"] >= max_deep_reads and not args.force_wake and not new_telegram_msgs:
+    if state["daily_stats"]["deep_reads_count"] >= max_deep_reads and not args.force_wake and not all_new_msgs:
         save_state(state)
         return {
             "should_wake": False,
@@ -212,12 +277,12 @@ def cmd_pulse(args):
     # 5. 生物鐘擲骰 (Wake probability)
     prob = rhythm.get("wake_probability", 0.6)
     dice_roll = random.random()
-    forced = args.force_wake or bool(new_telegram_msgs)
+    forced = args.force_wake or bool(all_new_msgs)
     should_wake = forced or (dice_roll < prob)
 
     if should_wake:
         state["daily_stats"]["wakes_count"] += 1
-        reason = "主人傳來新訊息，小鯨立即醒來！" if new_telegram_msgs else (
+        reason = "主人留下了新信件，小鯨立即醒來！" if all_new_msgs else (
             "手動強制喚醒" if args.force_wake else f"生物鐘響起 (擲骰 {dice_roll:.2f} < {prob})，小鯨精神飽滿地游出來了"
         )
     else:
@@ -229,7 +294,7 @@ def cmd_pulse(args):
         "reason": reason,
         "daily_stats": state["daily_stats"],
         "owner_inbox": state.get("owner_inbox", [])[-5:],  # 最近 5 則
-        "new_messages_from_owner": new_telegram_msgs
+        "new_messages_from_owner": all_new_msgs
     }
 
 
