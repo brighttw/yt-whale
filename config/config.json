@@ -11,6 +11,21 @@
     "recommend_score_threshold": 8.0,
     "cooldown_hours_on_429": 12
   },
+  "memory": {
+    "topic_half_life_days": 14,
+    "channel_boost_threshold": 8.5
+  },
+  "digest": {
+    "sponsorblock_enabled": true,
+    "sponsorblock_categories": [
+      "sponsor",
+      "selfpromo",
+      "interaction",
+      "intro",
+      "outro"
+    ],
+    "transcript_window_seconds": 30
+  },
   "discovery": {
     "cookies_from_browser": null,
     "default_keywords": [
@@ -34,6 +49,12 @@
         "channel_id": "UCbfYPyITQ-7l4upoX8nvctg"
       }
     ]
+  },
+  "voice": {
+    "enabled": true,
+    "tts_engine": "auto",
+    "edge_voice": "zh-TW-HsiaoChenNeural",
+    "mac_voice": "Meijia"
   },
   "telegram": {
     "enabled": false,

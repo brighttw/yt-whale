@@ -63,10 +63,102 @@ def load_config():
     return config
 
 
+def migrate_state_v2(state, config=None):
+    """將狀態無損遷移至 V2：包含三維情緒、半衰期品味權重、頻道信譽與必看佇列"""
+    now_iso = datetime.datetime.now().isoformat()
+    today_iso = datetime.date.today().isoformat()
+
+    # 1. 三維情緒模型
+    mood = state.setdefault("mood_state", {
+        "energy": 85.0,
+        "affection": 80.0,
+        "satisfaction": 80.0,
+        "current_mood": "靈感湧現 ✨",
+        "last_mood_update": now_iso
+    })
+    if "current_mood" not in mood:
+        mood["current_mood"] = derive_mood(mood)
+
+    # 2. 優先必看佇列
+    state.setdefault("watch_queue", [])
+
+    # 3. 升級品味記憶
+    tm = state.setdefault("taste_memory", {})
+    topic_weights = tm.setdefault("topic_weights", {})
+    channel_rep = tm.setdefault("channel_reputation", {})
+
+    for topic in tm.get("preferred_topics", []):
+        if topic not in topic_weights:
+            topic_weights[topic] = {
+                "weight": 2.0,
+                "last_updated": today_iso,
+                "evidence_count": 1
+            }
+
+    # 回填已觀看影片的頻道信譽
+    if not channel_rep:
+        for v in state.get("watched_videos", []):
+            ch = v.get("channel")
+            score = v.get("score", 8.0)
+            if ch:
+                rec = channel_rep.setdefault(ch, {"total_score": 0.0, "count": 0, "avg_score": 0.0})
+                rec["total_score"] += score
+                rec["count"] += 1
+                rec["avg_score"] = round(rec["total_score"] / rec["count"], 2)
+
+    return state
+
+
+def calculate_decayed_weight(initial_weight, last_updated_iso, half_life_days=14):
+    """依時間半衰期計算話題權重：W(t) = W0 * 0.5^(dt / half_life)"""
+    try:
+        last_dt = datetime.datetime.fromisoformat(last_updated_iso).date()
+        today = datetime.date.today()
+        days_passed = max(0, (today - last_dt).days)
+        decay = math.pow(0.5, days_passed / max(1, half_life_days))
+        return round(initial_weight * decay, 3)
+    except Exception:
+        return initial_weight
+
+
+def derive_mood(mood):
+    """根據三維指數推導即時心情標籤"""
+    energy = mood.get("energy", 80)
+    affection = mood.get("affection", 80)
+    satisfaction = mood.get("satisfaction", 80)
+
+    if energy < 30:
+        return "電力不足想睡覺 💤"
+    if affection >= 90:
+        return "被主人寵愛超開心 💖"
+    if satisfaction >= 85:
+        return "靈感湧現 ✨"
+    if satisfaction < 60:
+        return "踩雷小傲嬌 💢"
+    return "悠哉吐泡泡 🫧"
+
+
+def update_mood(state, d_energy=0.0, d_affection=0.0, d_satisfaction=0.0):
+    """更新情緒指數並確保數值在 0~100 之間"""
+    mood = state.setdefault("mood_state", {
+        "energy": 85.0,
+        "affection": 80.0,
+        "satisfaction": 80.0,
+        "current_mood": "靈感湧現 ✨",
+        "last_mood_update": datetime.datetime.now().isoformat()
+    })
+    mood["energy"] = max(0.0, min(100.0, round(mood.get("energy", 80.0) + d_energy, 1)))
+    mood["affection"] = max(0.0, min(100.0, round(mood.get("affection", 80.0) + d_affection, 1)))
+    mood["satisfaction"] = max(0.0, min(100.0, round(mood.get("satisfaction", 80.0) + d_satisfaction, 1)))
+    mood["current_mood"] = derive_mood(mood)
+    mood["last_mood_update"] = datetime.datetime.now().isoformat()
+    return mood
+
+
 def load_state():
     if not STATE_FILE.exists():
         STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-        return {
+        init_state = {
             "last_pulse_time": None,
             "daily_stats": {"date": None, "wakes_count": 0, "deep_reads_count": 0, "telegram_pings_count": 0},
             "telegram_offset": 0,
@@ -75,8 +167,10 @@ def load_state():
             "taste_memory": {"preferred_topics": [], "disliked_topics": [], "shared_memories": []},
             "cooldown_until": None,
         }
+        return migrate_state_v2(init_state)
     with open(STATE_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+        st = json.load(f)
+        return migrate_state_v2(st)
 
 
 def save_state(state):
@@ -95,6 +189,8 @@ def check_daily_reset(state):
             "deep_reads_count": 0,
             "telegram_pings_count": 0,
         }
+        # 新的一天恢復體力
+        update_mood(state, d_energy=30.0)
     return state
 
 
@@ -299,11 +395,15 @@ def cmd_pulse(args):
         reason = f"生物鐘小憩 (擲骰 {dice_roll:.2f} >= {prob})，今天這會兒有點慵懶，繼續潛在水底吐泡泡"
 
     save_state(state)
+    mood = state.get("mood_state", {})
     return {
         "should_wake": should_wake,
         "reason": reason,
+        "mood_state": mood,
+        "mood_prompt_hint": f"目前小鯨心情為「{mood.get('current_mood')}」(活力:{mood.get('energy')}%, 親密:{mood.get('affection')}%, 滿足:{mood.get('satisfaction')}%)，在日記與給主人的信中請自然流露出此狀態",
         "daily_stats": state["daily_stats"],
         "owner_inbox": state.get("owner_inbox", [])[-5:],  # 最近 5 則
+        "watch_queue": state.get("watch_queue", []),
         "new_messages_from_owner": all_new_msgs
     }
 
@@ -804,11 +904,47 @@ def cmd_record(args):
 
     state["daily_stats"]["deep_reads_count"] += 1
 
-    # 如果有新話題標籤，動態補充到品味記憶
+    # 1. 精讀消耗活力，評分影響滿足感
+    d_sat = 8.0 if args.score >= 8.5 else (-10.0 if args.score < 7.0 else 2.0)
+    update_mood(state, d_energy=-12.0, d_satisfaction=d_sat)
+
+    # 2. 如果影片在優先待看佇列中，完成後移出佇列
+    if "watch_queue" in state and args.video_id in state["watch_queue"]:
+        state["watch_queue"].remove(args.video_id)
+
+    # 3. 更新話題權重與品味記憶 (半衰期模型)
     if args.topic:
-        preferred = state.setdefault("taste_memory", {}).setdefault("preferred_topics", [])
+        tm = state.setdefault("taste_memory", {})
+        preferred = tm.setdefault("preferred_topics", [])
         if args.topic not in preferred:
             preferred.append(args.topic)
+
+        topic_weights = tm.setdefault("topic_weights", {})
+        today_iso = datetime.date.today().isoformat()
+        half_life = config.get("memory", {}).get("topic_half_life_days", 14)
+
+        if args.topic in topic_weights:
+            item = topic_weights[args.topic]
+            decayed = calculate_decayed_weight(item.get("weight", 1.0), item.get("last_updated", today_iso), half_life)
+            boost = 1.0 if args.score >= 8.0 else 0.2
+            item["weight"] = round(decayed + boost, 3)
+            item["last_updated"] = today_iso
+            item["evidence_count"] = item.get("evidence_count", 0) + 1
+        else:
+            topic_weights[args.topic] = {
+                "weight": 2.0 if args.score >= 8.0 else 1.0,
+                "last_updated": today_iso,
+                "evidence_count": 1
+            }
+
+    # 4. 更新頻道信譽庫
+    if args.channel:
+        tm = state.setdefault("taste_memory", {})
+        channel_rep = tm.setdefault("channel_reputation", {})
+        ch_stat = channel_rep.setdefault(args.channel, {"total_score": 0.0, "count": 0, "avg_score": 0.0})
+        ch_stat["total_score"] = round(ch_stat.get("total_score", 0.0) + args.score, 2)
+        ch_stat["count"] = ch_stat.get("count", 0) + 1
+        ch_stat["avg_score"] = round(ch_stat["total_score"] / ch_stat["count"], 2)
 
     # 演算法回饋：若啟用了瀏覽器 Cookie，在背景執行 mark-watched
     browser = config.get("discovery", {}).get("cookies_from_browser")

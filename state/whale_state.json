@@ -1,8 +1,8 @@
 {
-  "last_pulse_time": "2026-11-03T13:20:39.155038",
+  "last_pulse_time": "2026-11-03T16:20:04.490450",
   "daily_stats": {
     "date": "2026-11-03",
-    "wakes_count": 7,
+    "wakes_count": 8,
     "deep_reads_count": 4,
     "telegram_pings_count": 2
   },
@@ -76,7 +76,61 @@
       "clickbait",
       "crypto hype"
     ],
-    "shared_memories": []
+    "shared_memories": [],
+    "topic_weights": {
+      "AI agent": {
+        "weight": 2.0,
+        "last_updated": "2026-11-03",
+        "evidence_count": 1
+      },
+      "System design": {
+        "weight": 2.0,
+        "last_updated": "2026-11-03",
+        "evidence_count": 1
+      },
+      "Obsidian": {
+        "weight": 2.0,
+        "last_updated": "2026-11-03",
+        "evidence_count": 1
+      },
+      "agentic design patterns": {
+        "weight": 2.0,
+        "last_updated": "2026-11-03",
+        "evidence_count": 1
+      },
+      "mystery/true-crime": {
+        "weight": 2.0,
+        "last_updated": "2026-11-03",
+        "evidence_count": 1
+      },
+      "ai/memory": {
+        "weight": 2.0,
+        "last_updated": "2026-11-03",
+        "evidence_count": 1
+      },
+      "agent-evaluation": {
+        "weight": 2.0,
+        "last_updated": "2026-11-03",
+        "evidence_count": 1
+      }
+    },
+    "channel_reputation": {
+      "Google Cloud Tech": {
+        "total_score": 17.5,
+        "count": 2,
+        "avg_score": 8.75
+      },
+      "奇聞觀察室": {
+        "total_score": 8.6,
+        "count": 1,
+        "avg_score": 8.6
+      },
+      "Two Minute Papers": {
+        "total_score": 8.5,
+        "count": 1,
+        "avg_score": 8.5
+      }
+    }
   },
   "cooldown_until": null,
   "obsidian_read_state": {
@@ -84,7 +138,16 @@
     "processed_letters": {
       "2026-11-03-GDm_uH6VxPY.md": 1793671519.8820558,
       "2026-11-03-uNqHFC8fRqE.md": 1793671728.4802864,
-      "2026-11-03-4fLVq6HJsKc.md": 1793673459.114645
+      "2026-11-03-4fLVq6HJsKc.md": 1793673459.114645,
+      "2026-11-03-WZZLtwnZ4w0.md": 1793683596.199727
     }
-  }
+  },
+  "mood_state": {
+    "energy": 85.0,
+    "affection": 80.0,
+    "satisfaction": 80.0,
+    "current_mood": "靈感湧現 ✨",
+    "last_mood_update": "2026-11-03T16:20:04.490429"
+  },
+  "watch_queue": []
 }
