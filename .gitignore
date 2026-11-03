@@ -1,6 +1,12 @@
 # 環境變數與機密
+.env
+.env.*
 config/.env
+config/.env.*
 *.env
+*.env.*
+!.env.example
+!config/.env.example
 
 # Python 暫存檔
 __pycache__/

@@ -39,17 +39,27 @@ def load_config():
 
     # 讀取 .env 中的 Telegram 配置（若存在）
     if ENV_FILE.exists():
-        with open(ENV_FILE, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith("TELEGRAM_BOT_TOKEN="):
-                    val = line.split("=", 1)[1].strip()
-                    if val:
-                        config.setdefault("telegram", {})["bot_token"] = val
-                elif line.startswith("TELEGRAM_CHAT_ID="):
-                    val = line.split("=", 1)[1].strip()
-                    if val:
-                        config.setdefault("telegram", {})["chat_id"] = val
+        env_content = ENV_FILE.read_text(encoding="utf-8")
+        for line in env_content.splitlines():
+            line = line.strip()
+            if line.startswith("#") or not line:
+                continue
+            if line.startswith("TELEGRAM_BOT_TOKEN="):
+                val = line.split("=", 1)[1].strip()
+                if val:
+                    config.setdefault("telegram", {})["bot_token"] = val
+            elif line.startswith("TELEGRAM_CHAT_ID="):
+                val = line.split("=", 1)[1].strip()
+                if val:
+                    config.setdefault("telegram", {})["chat_id"] = val
+            elif line.startswith("TELEGRAM_ENABLED="):
+                val = line.split("=", 1)[1].strip().lower()
+                config.setdefault("telegram", {})["enabled"] = val in ("true", "1", "yes")
+
+        # 若 .env 提供了有效 Token，預設自動啟用 Telegram 功能（除非明確指定 TELEGRAM_ENABLED=false）
+        tg = config.setdefault("telegram", {})
+        if tg.get("bot_token") and tg.get("chat_id") and "TELEGRAM_ENABLED=" not in env_content:
+            tg["enabled"] = True
     return config
 
 
