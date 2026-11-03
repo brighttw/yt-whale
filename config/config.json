@@ -5,9 +5,9 @@
   },
   "rhythm": {
     "active_hours": [9, 23],
-    "wake_probability": 0.60,
-    "max_daily_deep_reads": 4,
-    "max_daily_telegram_pings": 3,
+    "wake_probability": 0.75,
+    "max_daily_deep_reads": 8,
+    "max_daily_telegram_pings": 6,
     "recommend_score_threshold": 8.0,
     "cooldown_hours_on_429": 12
   },

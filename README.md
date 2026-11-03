@@ -101,7 +101,7 @@ python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py synthesize --days 7 [--
 ## ⚙️ Antigravity 自動排程 Sidecar 設定
 
 小鯨的自動作息由常駐排程 Sidecar（`~/.gemini/config/sidecars/yt-whale-rhythm/sidecar.json`）驅動：
-- **Cron 時區**：`CRON_TZ=Asia/Taipei 0 11,16,21 * * *`
+- **Cron 時區**：`CRON_TZ=Asia/Taipei 0 9,12,15,18,21 * * *`
 - **權限白名單**：已配置無人值守執行的 `pulse`、`discover`、`digest`、`notify`、`record` 與 `synthesize` 命令授權。
 
 ---

@@ -29,7 +29,7 @@ python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py pulse
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py discover --limit 8
 ```
 - 若清單中出現 `source: "owner_direct_request"`，此為主人在 Telegram 或 Obsidian 交代必看的影片，**必須優先挑選**！
-- 結合品味記憶熱度榜（`topic_weights`）、寶藏頻道信譽榜（`channel_reputation`）以及當前情緒，挑選 **1 部（最多 2 部）** 最有價值或最打動小鯨的影片進行精讀。
+- 結合品味記憶熱度榜（`topic_weights`）、寶藏頻道信譽榜（`channel_reputation`）以及當前情緒，挑選 **1 ~ 2 部** 最有價值或最打動小鯨的影片進行精讀。
 
 ### Step 3: 六路互補深度解析 2.0 (Digest)
 針對挑選出的影片 ID 執行深度解析與畫面提取：

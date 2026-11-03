@@ -190,7 +190,7 @@ def check_daily_reset(state):
             "telegram_pings_count": 0,
         }
         # 新的一天恢復體力
-        update_mood(state, d_energy=30.0)
+        update_mood(state, d_energy=55.0)
     return state
 
 
@@ -446,9 +446,10 @@ def cmd_pulse(args):
     rhythm = config.get("rhythm", {})
     start_hour, end_hour = rhythm.get("active_hours", [9, 23])
     current_hour = now.hour
+    has_pending_queue = bool(state.get("watch_queue"))
     if not (start_hour <= current_hour <= end_hour):
-        # 不在作息窗口，但若主人有新留言，依然允許醒來回覆
-        if not all_new_msgs and not args.force_wake:
+        # 不在作息窗口，但若主人有新留言或待看佇列，依然允許醒來回覆/精讀
+        if not all_new_msgs and not has_pending_queue and not args.force_wake:
             save_state(state)
             return {
                 "should_wake": False,
@@ -457,9 +458,9 @@ def cmd_pulse(args):
                 "owner_inbox": state.get("owner_inbox", [])
             }
 
-    # 4. 檢查每日看片上限
-    max_deep_reads = rhythm.get("max_daily_deep_reads", 4)
-    if state["daily_stats"]["deep_reads_count"] >= max_deep_reads and not args.force_wake and not all_new_msgs:
+    # 4. 檢查每日看片上限 (若 watch_queue 有待看點播影片則破除配額限制)
+    max_deep_reads = rhythm.get("max_daily_deep_reads", 8)
+    if state["daily_stats"]["deep_reads_count"] >= max_deep_reads and not args.force_wake and not all_new_msgs and not has_pending_queue:
         save_state(state)
         return {
             "should_wake": False,
@@ -469,18 +470,25 @@ def cmd_pulse(args):
         }
 
     # 5. 生物鐘擲骰 (Wake probability)
-    prob = rhythm.get("wake_probability", 0.6)
+    prob = rhythm.get("wake_probability", 0.75)
     dice_roll = random.random()
-    forced = args.force_wake or bool(all_new_msgs)
+    forced = args.force_wake or bool(all_new_msgs) or has_pending_queue
     should_wake = forced or (dice_roll < prob)
 
     if should_wake:
         state["daily_stats"]["wakes_count"] += 1
-        reason = "主人留下了新信件，小鯨立即醒來！" if all_new_msgs else (
-            "手動強制喚醒" if args.force_wake else f"生物鐘響起 (擲骰 {dice_roll:.2f} < {prob})，小鯨精神飽滿地游出來了"
-        )
+        if has_pending_queue:
+            reason = f"主人點播佇列尚有 {len(state.get('watch_queue', []))} 部待看影片，小鯨優先醒來消化！"
+        elif all_new_msgs:
+            reason = "主人留下了新信件，小鯨立即醒來！"
+        elif args.force_wake:
+            reason = "手動強制喚醒"
+        else:
+            reason = f"生物鐘響起 (擲骰 {dice_roll:.2f} < {prob})，小鯨精神飽滿地游出來了"
     else:
-        reason = f"生物鐘小憩 (擲骰 {dice_roll:.2f} >= {prob})，今天這會兒有點慵懶，繼續潛在水底吐泡泡"
+        # 日間小憩回血恢復體力
+        update_mood(state, d_energy=10.0)
+        reason = f"生物鐘小憩 (擲骰 {dice_roll:.2f} >= {prob})，今天這會兒有點慵懶，潛在水底吐泡泡休息中 (活力 +10)"
 
     save_state(state)
     render_dashboard(config, state)
@@ -1210,6 +1218,10 @@ def render_dashboard(config, state):
         filled = max(0, min(10, int(val / 10)))
         return "▰" * filled + "▱" * (10 - filled) + f" `{val:.0f}%`"
 
+    rhythm = config.get("rhythm", {})
+    max_deep_reads = rhythm.get("max_daily_deep_reads", 8)
+    max_pings = rhythm.get("max_daily_telegram_pings", 6)
+
     # 寶藏頻道信譽榜
     channel_rep = state.get("taste_memory", {}).get("channel_reputation", {})
     sorted_channels = sorted(channel_rep.items(), key=lambda x: (x[1].get("avg_score", 0), x[1].get("count", 0)), reverse=True)
@@ -1259,7 +1271,7 @@ def render_dashboard(config, state):
 | **活力值 (Energy)** | `{energy:.0f} / 100` | {bar(energy)} |
 | **主人親密度 (Affection)** | `{affection:.0f} / 100` | {bar(affection)} |
 | **收穫感 (Satisfaction)** | `{satisfaction:.0f} / 100` | {bar(satisfaction)} |
-| **今日作息** | 醒來 `{daily.get('wakes_count', 0)}` 次 / 精讀 `{daily.get('deep_reads_count', 0)}` 部 / Telegram `{daily.get('telegram_pings_count', 0)}` 次 | 配額：精讀最多 4 部、推播最多 3 次 |
+| **今日作息** | 醒來 `{daily.get('wakes_count', 0)}` 次 / 精讀 `{daily.get('deep_reads_count', 0)}` 部 / Telegram `{daily.get('telegram_pings_count', 0)}` 次 | 配額：精讀最多 {max_deep_reads} 部、推播最多 {max_pings} 次 |
 | **主人點播佇列** | {queue_str} | 優先於一般探索流 |
 
 ---
@@ -1417,7 +1429,7 @@ def cmd_record(args):
 
     # 1. 精讀消耗活力，評分影響滿足感
     d_sat = 8.0 if args.score >= 8.5 else (-10.0 if args.score < 7.0 else 2.0)
-    update_mood(state, d_energy=-12.0, d_satisfaction=d_sat)
+    update_mood(state, d_energy=-8.0, d_satisfaction=d_sat)
 
     # 2. 如果影片在優先待看佇列中，完成後移出佇列
     if "watch_queue" in state and args.video_id in state["watch_queue"]:
