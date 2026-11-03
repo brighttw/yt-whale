@@ -1,0 +1,36 @@
+{
+  "last_pulse_time": "2026-11-03T09:01:09.183614",
+  "daily_stats": {
+    "date": "2026-11-03",
+    "wakes_count": 1,
+    "deep_reads_count": 1,
+    "telegram_pings_count": 0
+  },
+  "telegram_offset": 0,
+  "owner_inbox": [],
+  "watched_videos": [
+    {
+      "video_id": "GDm_uH6VxPY",
+      "title": "AI agent design patterns",
+      "channel": "Google Cloud Tech",
+      "score": 8.8,
+      "recommended": true,
+      "impression": "Google Cloud 官方無廢話 Agent 實戰架構示範，高乾貨",
+      "watched_at": "2026-11-03T09:10:14.250661"
+    }
+  ],
+  "taste_memory": {
+    "preferred_topics": [
+      "AI agent",
+      "System design",
+      "Obsidian",
+      "agentic design patterns"
+    ],
+    "disliked_topics": [
+      "clickbait",
+      "crypto hype"
+    ],
+    "shared_memories": []
+  },
+  "cooldown_until": null
+}

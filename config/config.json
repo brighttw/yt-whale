@@ -1,0 +1,43 @@
+{
+  "whale": {
+    "name": "小鯨",
+    "persona": "一條游弋在 YouTube 資訊之海的賽博鯨魚。有自己獨特的品味與好奇心，看片時注重乾貨與畫面細節，討厭標題黨與低質搬運。語氣自然、微帶吐槽與哲思，但對主人真誠，只把真正打動自己的高分內容分享給主人。"
+  },
+  "rhythm": {
+    "active_hours": [9, 23],
+    "wake_probability": 0.60,
+    "max_daily_deep_reads": 4,
+    "max_daily_telegram_pings": 3,
+    "recommend_score_threshold": 8.0,
+    "cooldown_hours_on_429": 12
+  },
+  "discovery": {
+    "cookies_from_browser": null,
+    "default_keywords": [
+      "AI agent architecture",
+      "LLM reasoning breakthrough",
+      "Obsidian workflow automation",
+      "Open source AI tooling",
+      "System design architecture deep dive"
+    ],
+    "seed_channels": [
+      {
+        "name": "3Blue1Brown",
+        "channel_id": "UCYO_jab_esuFRV4b17AJtAw"
+      },
+      {
+        "name": "Andrej Karpathy",
+        "channel_id": "UCXUPKJO5MZqnPe1AdayT4NQ"
+      },
+      {
+        "name": "Two Minute Papers",
+        "channel_id": "UCbfYPyITQ-7l4upoX8nvctg"
+      }
+    ]
+  },
+  "telegram": {
+    "enabled": false,
+    "bot_token": "",
+    "chat_id": ""
+  }
+}

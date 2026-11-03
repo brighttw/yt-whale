@@ -1,0 +1,116 @@
+{
+  "video_id": "GDm_uH6VxPY",
+  "url": "https://www.youtube.com/watch?v=GDm_uH6VxPY",
+  "title": "AI agent design patterns",
+  "channel": "Google Cloud Tech",
+  "duration_seconds": 501,
+  "duration_str": "8分21秒",
+  "chapters": [
+    {
+      "start_time": 0,
+      "title": "Intro",
+      "end_time": 61
+    },
+    {
+      "start_time": 61,
+      "title": "Pattern 1: Single agent",
+      "end_time": 185
+    },
+    {
+      "start_time": 185,
+      "title": "Pattern 2: Sequential agent",
+      "end_time": 321
+    },
+    {
+      "start_time": 321,
+      "title": "Pattern 3: Parallel agent",
+      "end_time": 428
+    },
+    {
+      "start_time": 428,
+      "title": "Recap",
+      "end_time": 501
+    }
+  ],
+  "has_subtitles": true,
+  "transcript_snippet": "Hi everyone, welcome to this agentic\npattern [music] series. So if you\nbuilding with AI, you probably wonder\nhow to really design the agentic system.\nSometimes you need a single agent and\nother times you need a whole team of\nthem working together. And today we will\ndiving into AI agent design patterns.\nAnd each pattern we're going to provide\nyou with practical example of code. And\nwe're also going to walk through a live\ndemo. And by the end of this agendic\npattern series, you will learn how to\nbuild agentic solution from single agent\npattern to different multi- aent\npattern. And for today's episode, we\nwill focus on practical examples of\nsingle agent, sequential agent, and\nparallel agent. For next episode, we're\ngonna cover orchestrator pattern, review\nand critique pattern with loop agent and\nagent as tool. All right, let's dive in.\nSo let's begin with the most fundamental\npattern, the single agent. Imagine you\nwant to plan a trip. So with a single\nagent, you want to give it instruction\non how to use a tool and we can have a\nset of tool like how to check the\nweather, check the traffic and schedule.\nBut for our example today, we will\nsimplify things with only Google search\ntool. So ",
+  "peak_times": [
+    "01:47",
+    "03:57",
+    "04:58",
+    "06:08"
+  ],
+  "captured_frames": [
+    {
+      "index": 1,
+      "timestamp": 107,
+      "time_str": "01:47",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/GDm_uH6VxPY/frame_1.jpg",
+      "relative_path": "videos/assets/GDm_uH6VxPY/frame_1.jpg",
+      "source": "native_hd_stream"
+    },
+    {
+      "index": 2,
+      "timestamp": 237,
+      "time_str": "03:57",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/GDm_uH6VxPY/frame_2.jpg",
+      "relative_path": "videos/assets/GDm_uH6VxPY/frame_2.jpg",
+      "source": "native_hd_stream"
+    },
+    {
+      "index": 3,
+      "timestamp": 298,
+      "time_str": "04:58",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/GDm_uH6VxPY/frame_3.jpg",
+      "relative_path": "videos/assets/GDm_uH6VxPY/frame_3.jpg",
+      "source": "native_hd_stream"
+    },
+    {
+      "index": 4,
+      "timestamp": 368,
+      "time_str": "06:08",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/GDm_uH6VxPY/frame_4.jpg",
+      "relative_path": "videos/assets/GDm_uH6VxPY/frame_4.jpg",
+      "source": "native_hd_stream"
+    }
+  ],
+  "comments_highlight": [
+    {
+      "author": "@googlecloudtech",
+      "text": "Agentic Pattern Lab→ https://goo.gle/agenticpattern",
+      "likes": 57,
+      "has_timestamp": false
+    },
+    {
+      "author": "@Damahni",
+      "text": "👍",
+      "likes": 1,
+      "has_timestamp": false
+    },
+    {
+      "author": "@googlecloudtech",
+      "text": " @Damahni  https://goo.gle/AIforBeginners",
+      "likes": 3,
+      "has_timestamp": false
+    },
+    {
+      "author": "@Damahni",
+      "text": "​ @googlecloudtech ✌️",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@sloker001",
+      "text": "I want white people explaining",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@jonron3805",
+      "text": "Where is the next video coming?",
+      "likes": 7,
+      "has_timestamp": false
+    }
+  ],
+  "assets_directory": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/GDm_uH6VxPY"
+}

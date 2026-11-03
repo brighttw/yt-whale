@@ -1,0 +1,630 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:00.000 --> 00:00:02.468
+[MUSIC PLAYING]
+
+00:00:04.440 --> 00:00:05.500
+ANNIE WANG: Hi, everyone.
+
+00:00:05.500 --> 00:00:08.240
+Welcome to this
+agentic pattern series.
+
+00:00:08.240 --> 00:00:10.800
+So if you're building
+with AI, you probably
+
+00:00:10.800 --> 00:00:15.020
+wonder how to really
+design the agentic system.
+
+00:00:15.020 --> 00:00:17.480
+Sometimes you need
+a single agent,
+
+00:00:17.480 --> 00:00:21.480
+and other times you need a whole
+team of them working together.
+
+00:00:21.480 --> 00:00:25.720
+And today, we are diving into
+AI agent design patterns,
+
+00:00:25.720 --> 00:00:27.920
+and each pattern we're
+going to provide you
+
+00:00:27.920 --> 00:00:30.100
+with practical examples of code.
+
+00:00:30.100 --> 00:00:32.600
+And we're also going to
+walk through a live demo.
+
+00:00:32.600 --> 00:00:35.600
+And by the end of this
+agentic pattern series,
+
+00:00:35.600 --> 00:00:38.600
+you will learn how to
+build agentic solution
+
+00:00:38.600 --> 00:00:42.540
+from single agent pattern to
+different multi-agent pattern.
+
+00:00:42.540 --> 00:00:44.600
+And for today's
+episode, we will focus
+
+00:00:44.600 --> 00:00:48.960
+on practical examples of
+single agent, sequential agent,
+
+00:00:48.960 --> 00:00:50.480
+and parallel agent.
+
+00:00:50.480 --> 00:00:54.120
+For next episode, we're going
+to cover orchestrator pattern,
+
+00:00:54.120 --> 00:00:58.920
+review and critique pattern with
+loop agent, and agent as tool.
+
+00:00:58.920 --> 00:01:01.040
+All right, let's dive in.
+
+00:01:01.040 --> 00:01:04.670
+So let's begin with the
+most fundamental pattern,
+
+00:01:04.670 --> 00:01:05.990
+the single agent.
+
+00:01:05.990 --> 00:01:08.230
+Imagine you want to plan a trip.
+
+00:01:08.230 --> 00:01:11.910
+So with a single agent, you
+want to give an instruction
+
+00:01:11.910 --> 00:01:13.490
+on how to use a tool.
+
+00:01:13.490 --> 00:01:17.210
+And we can have a set of tool,
+like how to check the weather,
+
+00:01:17.210 --> 00:01:19.210
+check the traffic, and schedule.
+
+00:01:19.210 --> 00:01:22.390
+But for our example today,
+we will simplify things
+
+00:01:22.390 --> 00:01:24.790
+with only Google Search tool.
+
+00:01:24.790 --> 00:01:27.470
+So you will write a
+comprehensive prompt
+
+00:01:27.470 --> 00:01:31.250
+telling the agent how to plan
+the trip using the search tool,
+
+00:01:31.250 --> 00:01:34.910
+so the agent then relies on the
+model's reasoning capability
+
+00:01:34.910 --> 00:01:37.630
+to figure out the
+sequence of steps.
+
+00:01:37.630 --> 00:01:40.830
+As you can see from the
+screen, the code for this
+
+00:01:40.830 --> 00:01:44.430
+is very straightforward with
+ADK Agent Development Kit.
+
+00:01:44.430 --> 00:01:49.310
+And let's test if it's ADK
+web UI by typing ADK app.
+
+00:01:49.310 --> 00:01:53.150
+So if I type, plan a
+trip to San Francisco,
+
+00:01:53.150 --> 00:01:57.110
+we can see in the tracing
+that agent is using the search
+
+00:01:57.110 --> 00:02:01.070
+tool to gather all the necessary
+information in just one go.
+
+00:02:01.070 --> 00:02:03.430
+We can see how it
+is using the tool
+
+00:02:03.430 --> 00:02:05.420
+from the tracing tab over here.
+
+00:02:05.420 --> 00:02:09.780
+However, this works for single
+task, but as you have more tools
+
+00:02:09.780 --> 00:02:12.140
+or the tasks are
+getting more complex,
+
+00:02:12.140 --> 00:02:15.420
+for example, if I have a
+request finding a sushi
+
+00:02:15.420 --> 00:02:17.460
+in San Francisco
+that's open late
+
+00:02:17.460 --> 00:02:19.760
+and finding the fastest
+way getting there.
+
+00:02:19.760 --> 00:02:22.240
+So if I build this
+with single agent,
+
+00:02:22.240 --> 00:02:25.260
+we need to define the
+logic in system instruction
+
+00:02:25.260 --> 00:02:28.620
+with this massive
+prompt and the behavior
+
+00:02:28.620 --> 00:02:31.540
+can become very unreliable.
+
+00:02:31.540 --> 00:02:35.900
+Since AI is non-deterministic,
+you cannot always guarantee that
+
+00:02:35.900 --> 00:02:39.940
+it will follow your multi-step
+logic perfectly every time.
+
+00:02:39.940 --> 00:02:45.780
+So the single agent lack of
+control is its main weakness.
+
+00:02:45.780 --> 00:02:48.340
+With single agent
+pattern, the benefit
+
+00:02:48.340 --> 00:02:50.880
+is it is very
+simple to implement,
+
+00:02:50.880 --> 00:02:53.580
+and it's great for
+straightforward, multi-step
+
+00:02:53.580 --> 00:02:54.420
+tasks.
+
+00:02:54.420 --> 00:02:58.860
+However, it is less reliable
+for complex workflow
+
+00:02:58.860 --> 00:03:01.660
+and is harder to
+control, and can fail
+
+00:03:01.660 --> 00:03:04.980
+as tasks becoming more complex.
+
+00:03:04.980 --> 00:03:08.330
+Now let's get to our second
+part of this video, which
+
+00:03:08.330 --> 00:03:10.010
+is the sequential agent.
+
+00:03:10.010 --> 00:03:12.330
+So with the task
+we covered earlier,
+
+00:03:12.330 --> 00:03:14.530
+how do we add in more control?
+
+00:03:14.530 --> 00:03:17.370
+This brings us to our
+first multi-agent pattern,
+
+00:03:17.370 --> 00:03:18.910
+the sequential agent.
+
+00:03:18.910 --> 00:03:23.210
+And this pattern is for highly
+structured, repeatable task,
+
+00:03:23.210 --> 00:03:26.110
+because the order of
+the operation is fixed.
+
+00:03:26.110 --> 00:03:29.970
+So the output of one subagent
+becomes the direct input
+
+00:03:29.970 --> 00:03:31.550
+for the next subagent.
+
+00:03:31.550 --> 00:03:33.490
+It's like an assembly line.
+
+00:03:33.490 --> 00:03:37.830
+And for our trip, we can break
+down to two specialized agents.
+
+00:03:37.830 --> 00:03:41.650
+So we have this first food
+finding agent and the second,
+
+00:03:41.650 --> 00:03:43.350
+a transportation agent.
+
+00:03:43.350 --> 00:03:46.410
+This sequential agent
+ensures that we always
+
+00:03:46.410 --> 00:03:48.810
+run this food finding
+agent first, and then
+
+00:03:48.810 --> 00:03:51.050
+this transportation agent next.
+
+00:03:51.050 --> 00:03:55.090
+So this gives us predictable,
+reliable execution.
+
+00:03:55.090 --> 00:03:56.730
+And you can take
+a look at a screen
+
+00:03:56.730 --> 00:04:02.890
+for this code example of how to
+write it in sequential agent.
+
+00:04:02.890 --> 00:04:08.090
+All right, let's try
+it out in ADK web UI.
+
+00:04:08.090 --> 00:04:10.010
+And you can look
+at the tracing tab.
+
+00:04:10.010 --> 00:04:13.160
+You can see that it's executed
+the food agent first and then
+
+00:04:13.160 --> 00:04:15.100
+the transportation agent next.
+
+00:04:15.100 --> 00:04:16.420
+Perfect.
+
+00:04:16.420 --> 00:04:19.079
+So how do they communicate
+with each other?
+
+00:04:19.079 --> 00:04:22.400
+So they share information
+through this shared session
+
+00:04:22.400 --> 00:04:25.980
+state, which act like
+a shared scratchpad.
+
+00:04:25.980 --> 00:04:28.960
+You can check the session
+state value at this tab.
+
+00:04:28.960 --> 00:04:32.040
+And once the first agent
+writes its finding,
+
+00:04:32.040 --> 00:04:34.680
+and then the second
+agent reads it from it
+
+00:04:34.680 --> 00:04:38.160
+by using this curly braces
+in its system prompt.
+
+00:04:38.160 --> 00:04:42.840
+So this is a form of short-term
+memory for your agent system.
+
+00:04:42.840 --> 00:04:45.800
+And the advantages
+of sequential agent,
+
+00:04:45.800 --> 00:04:50.320
+is that it has high degree
+of control and reliability.
+
+00:04:50.320 --> 00:04:53.520
+It is more predictable
+than a single agent,
+
+00:04:53.520 --> 00:04:55.920
+but it can be very inflexible.
+
+00:04:55.920 --> 00:04:58.560
+This rigid predefined
+structure can't
+
+00:04:58.560 --> 00:05:00.960
+adapt to dynamic situations.
+
+00:05:00.960 --> 00:05:03.840
+Now let's go to the
+third part of this video,
+
+00:05:03.840 --> 00:05:05.440
+the parallel agent.
+
+00:05:05.440 --> 00:05:09.700
+So, what if some tasks don't
+need to be happen in order?
+
+00:05:09.700 --> 00:05:12.380
+Let's say, if I want
+to plan a full trip,
+
+00:05:12.380 --> 00:05:15.400
+need to find a good museum,
+find a good concert,
+
+00:05:15.400 --> 00:05:16.940
+and a good restaurant.
+
+00:05:16.940 --> 00:05:20.440
+If I'm doing them in sequential
+order, it will be slow.
+
+00:05:20.440 --> 00:05:23.960
+This is where the parallel
+agent pattern really shines.
+
+00:05:23.960 --> 00:05:26.760
+It allows multiple
+specialized agents
+
+00:05:26.760 --> 00:05:29.760
+to run independently
+at the same time.
+
+00:05:29.760 --> 00:05:34.260
+We can have three agents
+museum finder, concert finder,
+
+00:05:34.260 --> 00:05:37.640
+restaurant finder, all
+searching concurrently.
+
+00:05:37.640 --> 00:05:40.440
+As you can see, this
+will be a lot faster
+
+00:05:40.440 --> 00:05:43.260
+compared to doing them
+in sequential order.
+
+00:05:43.260 --> 00:05:45.900
+Of course, after they
+all find something,
+
+00:05:45.900 --> 00:05:48.900
+we need to bring these
+results together.
+
+00:05:48.900 --> 00:05:53.880
+So a common approach, is combine
+this with a sequential agent.
+
+00:05:53.880 --> 00:05:57.280
+So first, we will run
+the search in parallel.
+
+00:05:57.280 --> 00:06:00.520
+And then second, we will
+run a final aggregator agent
+
+00:06:00.520 --> 00:06:04.600
+to synthesize all the results
+in a single trip plan.
+
+00:06:04.600 --> 00:06:08.000
+And here's the agent code
+on how to put together them.
+
+00:06:08.000 --> 00:06:10.200
+[DING]
+
+00:06:11.520 --> 00:06:14.440
+All right, let's
+test in ADK web UI.
+
+00:06:14.440 --> 00:06:17.910
+After we type the question
+from this tracing tab,
+
+00:06:17.910 --> 00:06:20.310
+we can see three
+searching agents
+
+00:06:20.310 --> 00:06:22.170
+kick off all at the same time.
+
+00:06:22.170 --> 00:06:23.870
+So once they're
+done, the results
+
+00:06:23.870 --> 00:06:25.490
+are returned to
+the session state,
+
+00:06:25.490 --> 00:06:27.090
+as you can see from this tab.
+
+00:06:27.090 --> 00:06:30.990
+And then the final summarizing
+agent reads that state
+
+00:06:30.990 --> 00:06:32.910
+and generate our plan.
+
+00:06:32.910 --> 00:06:36.870
+And this logic is defined in
+the system prompt over here.
+
+00:06:36.870 --> 00:06:39.110
+As you can see,
+this is a great way
+
+00:06:39.110 --> 00:06:42.350
+to reduce latency for tasks
+that can be broken down
+
+00:06:42.350 --> 00:06:44.530
+into independent subtasks.
+
+00:06:44.530 --> 00:06:47.070
+So the benefit of this
+design is very obvious
+
+00:06:47.070 --> 00:06:50.570
+that a significantly reduced
+latency by running tasks
+
+00:06:50.570 --> 00:06:51.710
+at the same time.
+
+00:06:51.710 --> 00:06:54.830
+However, it can have
+higher initial costs,
+
+00:06:54.830 --> 00:06:58.410
+because it is running
+multiple agents all at once.
+
+00:06:58.410 --> 00:07:02.390
+And in a lot of use cases, it
+requires gather or synthesize
+
+00:07:02.390 --> 00:07:05.750
+step to combine the result,
+which can add complexity
+
+00:07:05.750 --> 00:07:06.910
+to our design.
+
+00:07:06.910 --> 00:07:09.810
+All right, let's recap
+what we covered so far.
+
+00:07:09.810 --> 00:07:11.650
+So we covered the single agent.
+
+00:07:11.650 --> 00:07:13.370
+It is simple to implement.
+
+00:07:13.370 --> 00:07:16.630
+It can be very flexible,
+but it lacks certain control
+
+00:07:16.630 --> 00:07:18.280
+over this whole system.
+
+00:07:18.280 --> 00:07:20.280
+We also cover the
+sequential agent.
+
+00:07:20.280 --> 00:07:22.180
+It adds a certain
+level of control
+
+00:07:22.180 --> 00:07:24.260
+and make the system
+more reliable,
+
+00:07:24.260 --> 00:07:26.560
+but it is not very flexible.
+
+00:07:26.560 --> 00:07:29.100
+And lastly, we covered
+the parallel agent.
+
+00:07:29.100 --> 00:07:32.980
+It is fast, efficient, and
+great for independent tasks,
+
+00:07:32.980 --> 00:07:36.120
+but it can add cost and
+complexity to your system.
+
+00:07:36.120 --> 00:07:37.780
+With those pattern,
+you can already
+
+00:07:37.780 --> 00:07:39.880
+build some powerful workflow.
+
+00:07:39.880 --> 00:07:41.500
+And in our next
+video, we're going
+
+00:07:41.500 --> 00:07:45.220
+to level up with more advanced
+patterns for handling even more
+
+00:07:45.220 --> 00:07:47.200
+complex and dynamic problems.
+
+00:07:47.200 --> 00:07:50.580
+We will explore cases with
+different practical examples.
+
+00:07:50.580 --> 00:07:53.660
+And the pattern we're going to
+cover next episode, including
+
+00:07:53.660 --> 00:07:56.700
+the loop and critique pattern
+for self-correction, so
+
+00:07:56.700 --> 00:07:59.080
+coordinated pattern
+for dynamic routing,
+
+00:07:59.080 --> 00:08:02.980
+and also the powerful concept
+of using agent as a tool.
+
+00:08:02.980 --> 00:08:04.760
+All right, I will see
+you in next video.
+
+00:08:04.760 --> 00:08:05.360
+Bye.
+
+00:08:05.360 --> 00:08:08.110
+[MUSIC PLAYING]
+

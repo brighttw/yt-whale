@@ -1,0 +1,13 @@
+# 環境變數與機密
+config/.env
+*.env
+
+# Python 暫存檔
+__pycache__/
+*.pyc
+
+# 暫存影片音訊或下載緩存（關鍵幀截圖保存在 videos/assets，若需要追蹤可保留）
+videos/assets/**/*.mp4
+videos/assets/**/*.webm
+videos/assets/**/*.m4a
+videos/assets/**/*.part
