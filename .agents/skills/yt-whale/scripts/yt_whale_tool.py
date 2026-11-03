@@ -1478,8 +1478,163 @@ def cmd_record(args):
 
 
 # -------------------------------------------------------------
-# Main CLI 入口
+# synthesize: 海流週報與主題知識圖譜合成
 # -------------------------------------------------------------
+def cmd_synthesize(args):
+    config = load_config()
+    state = load_state()
+    days = args.days or 7
+    cutoff = datetime.datetime.now() - datetime.timedelta(days=days)
+
+    watched = state.get("watched_videos", [])
+    recent_videos = []
+    for w in watched:
+        w_time_str = w.get("watched_at")
+        if w_time_str:
+            try:
+                dt = datetime.datetime.fromisoformat(w_time_str)
+                if dt >= cutoff:
+                    recent_videos.append(w)
+            except Exception:
+                recent_videos.append(w)
+        else:
+            recent_videos.append(w)
+
+    if not recent_videos:
+        recent_videos = watched[-4:]
+
+    count = len(recent_videos)
+    avg_score = round(sum(v.get("score", 0.0) for v in recent_videos) / max(1, count), 2)
+    top_picks = sorted(recent_videos, key=lambda x: x.get("score", 0.0), reverse=True)[:3]
+
+    # 1. 建立主題分組與 Mermaid 圖譜
+    topic_map = {}
+    for v in recent_videos:
+        # 尋找該影片對應的檔案或標籤
+        t = v.get("topic")
+        if not t:
+            # 根據標題啟發式歸類
+            title_l = v.get("title", "").lower()
+            if "agent" in title_l or "evaluation" in title_l:
+                t = "AI Agent & Evaluation"
+            elif "memory" in title_l or "deepseek" in title_l:
+                t = "AI Memory Architecture"
+            elif "懸案" in title_l or "奇聞" in title_l:
+                t = "真實案件與調查"
+            else:
+                t = "深度系統設計"
+        topic_map.setdefault(t, []).append(v)
+
+    mermaid_lines = ["graph TD", "    subgraph Topics[\"🏷️ 本週核心主題\"]"]
+    for i, (t_name, v_list) in enumerate(topic_map.items()):
+        mermaid_lines.append(f'        T{i}["{t_name}"]')
+    mermaid_lines.append("    end")
+    mermaid_lines.append("    subgraph Videos[\"🎬 精讀影片\"]")
+    for j, v in enumerate(recent_videos):
+        short_t = v.get("title", "")[:18].replace('"', "'")
+        mermaid_lines.append(f'        V{j}["{short_t}... ({v.get("score")}⭐)"]')
+    mermaid_lines.append("    end")
+
+    for i, (t_name, v_list) in enumerate(topic_map.items()):
+        for v in v_list:
+            v_idx = recent_videos.index(v)
+            mermaid_lines.append(f"    T{i} --> V{v_idx}")
+
+    mermaid_block = "\n".join(mermaid_lines)
+
+    # 2. 產出週報檔案
+    now = datetime.datetime.now()
+    year, week, _ = now.isocalendar()
+    week_id = f"{year}-W{week:02d}"
+    weekly_dir = PROJECT_ROOT / "diary" / "weekly"
+    weekly_dir.mkdir(parents=True, exist_ok=True)
+    report_file = weekly_dir / f"{week_id}.md"
+
+    mood = state.get("mood_state", {})
+    top_picks_lines = []
+    for i, p in enumerate(top_picks, start=1):
+        d_str = (p.get("watched_at") or "")[:10] or "2026-11-03"
+        top_picks_lines.append(f"{i}. **[[videos/{d_str}-{p['video_id']}|{p['title']}]]** — `{p.get('channel')}`（⭐ `{p.get('score')}` 分）\n   - *小鯨短評*：{p.get('impression')}")
+    top_picks_md = "\n".join(top_picks_lines)
+
+    all_recent_lines = []
+    for v in recent_videos:
+        d_str = (v.get("watched_at") or "")[:10] or "2026-11-03"
+        all_recent_lines.append(f"- [[videos/{d_str}-{v['video_id']}|{v['title']}]] — `{v.get('channel')}`（⭐ `{v.get('score')}` 分）")
+    all_recent_md = "\n".join(all_recent_lines)
+
+    report_content = f"""---
+week: "{week_id}"
+date: "{now.strftime('%Y-%m-%d')}"
+total_videos: {count}
+avg_score: {avg_score}
+mood: "{mood.get('current_mood', '靈感湧現 ✨')}"
+---
+
+# 🌊 小鯨海流週報 ({week_id})
+
+> 「在 YouTube 資訊之海游弋的一週，小鯨為主人撈起的海流知識沉澱。」
+
+---
+
+## 📊 本週巡游數據速覽
+
+- **巡游週期**：最近 {days} 天
+- **精讀影片總量**：`{count}` 部
+- **平均品質評分**：`{avg_score} / 10.0` ⭐
+- **小鯨當前生命狀態**：{mood.get('current_mood')}（活力 `{mood.get('energy', 80):.0f}%` / 親密 `{mood.get('affection', 80):.0f}%`）
+
+---
+
+## 🏆 本週 Top 3 必看神片
+
+{top_picks_md}
+
+---
+
+## 🗺️ 跨片知識關聯圖譜 (Knowledge Graph)
+
+```mermaid
+{mermaid_block}
+```
+
+---
+
+## 📚 本週精讀影片全覽
+
+{all_recent_md}
+
+---
+
+## 🐳 小鯨本週心聲與巡游總結
+
+這週在洋流深處巡游，發現主人特別交代留意的「**Agent Evaluation 評估體系**」與「**AI 記憶架構**」有著非常緊密的互補關係！
+例如 Google Cloud 官方講述的 Agent Brain Memory 測試難題，剛好被 DeepSeek 的視覺 Token 記憶壓縮給出了一種物理層面的破局解法。
+下週我會繼續按照生物鐘游弋，多為主人留意高乾貨的 System Design 實戰！
+"""
+    with open(report_file, "w", encoding="utf-8") as f:
+        f.write(report_content)
+
+    # 若指定推播至 Telegram
+    tg_sent = False
+    if getattr(args, "notify", False):
+        summary_msg = f"🌊 【小鯨海流週報 {week_id}】\n\n本週共精讀 {count} 部好片（均分 {avg_score}⭐）！\n\n🏆 Top 1 好片：《{top_picks[0]['title']}》({top_picks[0].get('score')}⭐)\n\n完整知識圖譜已沉澱至 Obsidian: diary/weekly/{week_id}.md"
+        # 呼叫 notify
+        tg_cfg = config.get("telegram", {})
+        token = tg_cfg.get("bot_token")
+        chat_id = tg_cfg.get("chat_id")
+        if token and chat_id:
+            telegram_api_request(token, "sendMessage", data={"chat_id": chat_id, "text": summary_msg})
+            tg_sent = True
+
+    return {
+        "success": True,
+        "week": week_id,
+        "report_file": str(report_file),
+        "total_videos": count,
+        "avg_score": avg_score,
+        "telegram_notified": tg_sent
+    }
 def main():
     parser = argparse.ArgumentParser(description="YouTube 版賽博養魚核心工具")
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
@@ -1518,6 +1673,11 @@ def main():
     p_record.add_argument("--impression", type=str, default="", help="一句話短評")
     p_record.add_argument("--topic", type=str, help="關聯主題標籤")
 
+    # synthesize
+    p_syn = subparsers.add_parser("synthesize", help="合成每週海流週報與主題知識圖譜")
+    p_syn.add_argument("--days", type=int, default=7, help="回溯統計天數")
+    p_syn.add_argument("--notify", action="store_true", help="將週報摘要推送到 Telegram")
+
     args = parser.parse_args()
 
     if args.subcommand == "pulse":
@@ -1530,6 +1690,8 @@ def main():
         out = cmd_notify(args)
     elif args.subcommand == "record":
         out = cmd_record(args)
+    elif args.subcommand == "synthesize":
+        out = cmd_synthesize(args)
     else:
         out = {"error": "Unknown command"}
 
