@@ -1,10 +1,10 @@
 {
-  "last_pulse_time": "2026-11-03T10:31:09.291964",
+  "last_pulse_time": "2026-11-03T13:20:39.155038",
   "daily_stats": {
     "date": "2026-11-03",
-    "wakes_count": 6,
-    "deep_reads_count": 3,
-    "telegram_pings_count": 1
+    "wakes_count": 7,
+    "deep_reads_count": 4,
+    "telegram_pings_count": 2
   },
   "telegram_offset": 0,
   "owner_inbox": [
@@ -51,6 +51,15 @@
       "recommended": true,
       "impression": "DeepSeek 視覺 Token 壓縮長文本長記憶架構，角度新穎",
       "watched_at": "2026-11-03T10:38:05.919057"
+    },
+    {
+      "video_id": "WZZLtwnZ4w0",
+      "title": "The agent evaluation revolution",
+      "channel": "Google Cloud Tech",
+      "score": 8.7,
+      "recommended": true,
+      "impression": "Google Cloud 官方 Agent 全棧系統級評估架構，直擊 Agent Brain、Memory 與 Tool 測試痛點",
+      "watched_at": "2026-11-03T13:26:41.015013"
     }
   ],
   "taste_memory": {
@@ -60,7 +69,8 @@
       "Obsidian",
       "agentic design patterns",
       "mystery/true-crime",
-      "ai/memory"
+      "ai/memory",
+      "agent-evaluation"
     ],
     "disliked_topics": [
       "clickbait",
@@ -73,7 +83,8 @@
     "owner_note_mtime": 1793671228.889796,
     "processed_letters": {
       "2026-11-03-GDm_uH6VxPY.md": 1793671519.8820558,
-      "2026-11-03-uNqHFC8fRqE.md": 1793671728.4802864
+      "2026-11-03-uNqHFC8fRqE.md": 1793671728.4802864,
+      "2026-11-03-4fLVq6HJsKc.md": 1793673459.114645
     }
   }
 }

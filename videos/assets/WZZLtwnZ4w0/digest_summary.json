@@ -1,0 +1,116 @@
+{
+  "video_id": "WZZLtwnZ4w0",
+  "url": "https://www.youtube.com/watch?v=WZZLtwnZ4w0",
+  "title": "The agent evaluation revolution",
+  "channel": "Google Cloud Tech",
+  "duration_seconds": 511,
+  "duration_str": "8分31秒",
+  "chapters": [
+    {
+      "start_time": 0,
+      "title": "Introduction to AI evaluation",
+      "end_time": 91
+    },
+    {
+      "start_time": 91,
+      "title": "Why agents are hard to test",
+      "end_time": 169
+    },
+    {
+      "start_time": 169,
+      "title": "System-level testing framework",
+      "end_time": 319
+    },
+    {
+      "start_time": 319,
+      "title": "Multi-agent evaluation example",
+      "end_time": 434
+    },
+    {
+      "start_time": 434,
+      "title": "Conclusion and next steps",
+      "end_time": 511
+    }
+  ],
+  "has_subtitles": false,
+  "transcript_snippet": "無字幕軌道",
+  "peak_times": [
+    "01:16",
+    "03:24",
+    "05:32",
+    "07:14"
+  ],
+  "captured_frames": [
+    {
+      "index": 1,
+      "timestamp": 76,
+      "time_str": "01:16",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/WZZLtwnZ4w0/frame_1.jpg",
+      "relative_path": "videos/assets/WZZLtwnZ4w0/frame_1.jpg",
+      "source": "native_hd_stream"
+    },
+    {
+      "index": 2,
+      "timestamp": 204,
+      "time_str": "03:24",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/WZZLtwnZ4w0/frame_2.jpg",
+      "relative_path": "videos/assets/WZZLtwnZ4w0/frame_2.jpg",
+      "source": "native_hd_stream"
+    },
+    {
+      "index": 3,
+      "timestamp": 332,
+      "time_str": "05:32",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/WZZLtwnZ4w0/frame_3.jpg",
+      "relative_path": "videos/assets/WZZLtwnZ4w0/frame_3.jpg",
+      "source": "native_hd_stream"
+    },
+    {
+      "index": 4,
+      "timestamp": 434,
+      "time_str": "07:14",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/WZZLtwnZ4w0/frame_4.jpg",
+      "relative_path": "videos/assets/WZZLtwnZ4w0/frame_4.jpg",
+      "source": "native_hd_stream"
+    }
+  ],
+  "comments_highlight": [
+    {
+      "author": "@SASAAMstudio",
+      "text": "Explain with tool navigations, setup and configurations.. merely explaining the theory is of no use",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@tong_explores",
+      "text": "Love the Annie's series!",
+      "likes": 5,
+      "has_timestamp": false
+    },
+    {
+      "author": "@MrAhemdAssem",
+      "text": "Me too!",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@chougaghil",
+      "text": "The DSPy ReAct agent shows all its progress with 'observation'  and 'thought' traces; its planning, decision to call x o y tool and the reason being ... a very nice framework that anticipated by design this evaluation need",
+      "likes": 1,
+      "has_timestamp": false
+    },
+    {
+      "author": "@paburgos",
+      "text": "Next video please!",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@SamiSabirIdrissi",
+      "text": "I think i am in love! I am in love with the agent evaluation feature! 😍Test Test Test! The new age of test automation has begun! AI Agent Test Automation!! i love it!",
+      "likes": 1,
+      "has_timestamp": false
+    }
+  ],
+  "assets_directory": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/WZZLtwnZ4w0"
+}
