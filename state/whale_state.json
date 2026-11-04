@@ -1,10 +1,10 @@
 {
-  "last_pulse_time": "2026-11-03T21:00:48.679378",
+  "last_pulse_time": "2026-11-04T09:00:49.046751",
   "daily_stats": {
-    "date": "2026-11-03",
-    "wakes_count": 12,
-    "deep_reads_count": 6,
-    "telegram_pings_count": 6
+    "date": "2026-11-04",
+    "wakes_count": 1,
+    "deep_reads_count": 1,
+    "telegram_pings_count": 2
   },
   "telegram_offset": 0,
   "owner_inbox": [
@@ -78,6 +78,15 @@
       "recommended": true,
       "impression": "神級數學可視化！3Blue1Brown 帶你從 784 個像素神經元看透深度學習底層數學之美",
       "watched_at": "2026-11-03T21:05:26.091915"
+    },
+    {
+      "video_id": "e-gwvmhyU7A",
+      "title": "Aravind Srinivas: Perplexity CEO on Future of AI, Search & the Internet | Lex Fridman Podcast #434",
+      "channel": "Lex Fridman",
+      "score": 8.9,
+      "recommended": true,
+      "impression": "Perplexity 創辦人 3 小時無保留訪談，深度拆解即時 RAG 搜尋架構與 AI 系統工程實戰",
+      "watched_at": "2026-11-04T09:06:36.849018"
     }
   ],
   "taste_memory": {
@@ -90,7 +99,8 @@
       "ai/memory",
       "agent-evaluation",
       "deepseek",
-      "ai/deep-learning"
+      "ai/deep-learning",
+      "system-design"
     ],
     "disliked_topics": [
       "clickbait",
@@ -142,6 +152,11 @@
         "weight": 2.0,
         "last_updated": "2026-11-03",
         "evidence_count": 1
+      },
+      "system-design": {
+        "weight": 2.0,
+        "last_updated": "2026-11-04",
+        "evidence_count": 1
       }
     },
     "channel_reputation": {
@@ -164,6 +179,11 @@
         "total_score": 9.2,
         "count": 1,
         "avg_score": 9.2
+      },
+      "Lex Fridman": {
+        "total_score": 8.9,
+        "count": 1,
+        "avg_score": 8.9
       }
     }
   },
@@ -175,15 +195,16 @@
       "2026-11-03-uNqHFC8fRqE.md": 1793671728.4802864,
       "2026-11-03-4fLVq6HJsKc.md": 1793673459.114645,
       "2026-11-03-WZZLtwnZ4w0.md": 1793683596.199727,
-      "2026-11-03-pryCaGv8wuo.md": 1793703833.0670998
+      "2026-11-03-pryCaGv8wuo.md": 1793703833.0670998,
+      "2026-11-03-aircAruvnKk.md": 1793711120.91449
     }
   },
   "mood_state": {
-    "energy": 69.0,
-    "affection": 92.0,
-    "satisfaction": 96.0,
+    "energy": 92.0,
+    "affection": 98.0,
+    "satisfaction": 100.0,
     "current_mood": "被主人寵愛超開心 💖",
-    "last_mood_update": "2026-11-03T21:05:26.091922"
+    "last_mood_update": "2026-11-04T09:06:36.849025"
   },
   "watch_queue": []
 }

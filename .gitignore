@@ -16,6 +16,10 @@ Thumbs.db
 __pycache__/
 *.pyc
 
+# 排除每日日記與信件（個人日常紀錄，不納入 Git 追蹤）
+diary/private/
+diary/letters/
+
 # 暫存影片音訊或下載緩存（關鍵幀截圖保存在 videos/assets，若需要追蹤可保留）
 videos/assets/**/*.mp4
 videos/assets/**/*.webm

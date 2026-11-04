@@ -1,0 +1,187 @@
+{
+  "video_id": "e-gwvmhyU7A",
+  "url": "https://www.youtube.com/watch?v=e-gwvmhyU7A",
+  "title": "Aravind Srinivas: Perplexity CEO on Future of AI, Search & the Internet | Lex Fridman Podcast #434",
+  "channel": "Lex Fridman",
+  "duration_seconds": 10936,
+  "duration_str": "182分16秒",
+  "chapters": [
+    {
+      "start_time": 0,
+      "title": "Introduction",
+      "end_time": 113
+    },
+    {
+      "start_time": 113,
+      "title": "How Perplexity works",
+      "end_time": 590
+    },
+    {
+      "start_time": 590,
+      "title": "How Google works",
+      "end_time": 1937
+    },
+    {
+      "start_time": 1937,
+      "title": "Larry Page and Sergey Brin",
+      "end_time": 2812
+    },
+    {
+      "start_time": 2812,
+      "title": "Jeff Bezos",
+      "end_time": 3020
+    },
+    {
+      "start_time": 3020,
+      "title": "Elon Musk",
+      "end_time": 3158
+    },
+    {
+      "start_time": 3158,
+      "title": "Jensen Huang",
+      "end_time": 3355
+    },
+    {
+      "start_time": 3355,
+      "title": "Mark Zuckerberg",
+      "end_time": 3443
+    },
+    {
+      "start_time": 3443,
+      "title": "Yann LeCun",
+      "end_time": 3849
+    },
+    {
+      "start_time": 3849,
+      "title": "Breakthroughs in AI",
+      "end_time": 4807
+    },
+    {
+      "start_time": 4807,
+      "title": "Curiosity",
+      "end_time": 5184
+    },
+    {
+      "start_time": 5184,
+      "title": "1 trillion dollar question",
+      "end_time": 6074
+    },
+    {
+      "start_time": 6074,
+      "title": "Perplexity origin story",
+      "end_time": 6987
+    },
+    {
+      "start_time": 6987,
+      "title": "RAG",
+      "end_time": 8325
+    },
+    {
+      "start_time": 8325,
+      "title": "1 million H100 GPUs",
+      "end_time": 8477
+    },
+    {
+      "start_time": 8477,
+      "title": "Advice for startups",
+      "end_time": 9234
+    },
+    {
+      "start_time": 9234,
+      "title": "Future of search",
+      "end_time": 10291
+    },
+    {
+      "start_time": 10291,
+      "title": "Future of AI",
+      "end_time": 10936
+    }
+  ],
+  "has_subtitles": false,
+  "transcript_snippet": "無字幕軌道",
+  "sponsor_segments_skipped": 0,
+  "peak_times": [
+    "00:54",
+    "02:44",
+    "19:08",
+    "28:15"
+  ],
+  "captured_frames": [
+    {
+      "index": 1,
+      "timestamp": 54,
+      "time_str": "00:54",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/e-gwvmhyU7A/frame_1.jpg",
+      "relative_path": "videos/assets/e-gwvmhyU7A/frame_1.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    },
+    {
+      "index": 2,
+      "timestamp": 164,
+      "time_str": "02:44",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/e-gwvmhyU7A/frame_2.jpg",
+      "relative_path": "videos/assets/e-gwvmhyU7A/frame_2.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    },
+    {
+      "index": 3,
+      "timestamp": 1148,
+      "time_str": "19:08",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/e-gwvmhyU7A/frame_3.jpg",
+      "relative_path": "videos/assets/e-gwvmhyU7A/frame_3.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    },
+    {
+      "index": 4,
+      "timestamp": 1695,
+      "time_str": "28:15",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/e-gwvmhyU7A/frame_4.jpg",
+      "relative_path": "videos/assets/e-gwvmhyU7A/frame_4.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    }
+  ],
+  "related_past_videos": [],
+  "comments_highlight": [
+    {
+      "author": "@lexfridman",
+      "text": "Here are the timestamps. Please check out our sponsors to support this podcast.\r\nTranscript: https://lexfridman.com/aravind-srinivas-transcript\r\n0:00 - Introduction & sponsor mentions:\r\n- Cloaked: https://cloaked.com/lex and use code LexPod to get 25% off\r\n- ShipStation: https://shipstation.com/lex and use code LEX to get 60-day free trial\r\n- NetSuite: http://netsuite.com/lex to get free product tour\r\n- LMNT: https://drinkLMNT.com/lex to get free sample pack\r\n- Shopify: https://shopify.com/lex to get $1 per month trial\r\n- BetterHelp: https://betterhelp.com/lex to get 10% off\r\n1:53 - How Perplexity works\r\n9:50 - How Google works\r\n32:17 - Larry Page and Sergey Brin\r\n46:52 - Jeff Bezos\r\n50:20 - Elon Musk\r\n52:38 - Jensen Huang\r\n55:55 - Mark Zuckerberg\r\n57:23 - Yann LeCun\r\n1:04:09 - Breakthroughs in AI\r\n1:20:07 - Curiosity\r\n1:26:24 - $1 trillion dollar question\r\n1:41:14 - Perplexity origin story\r\n1:56:27 - RAG\r\n2:18:45 - 1 million H100 GPUs\r\n2:21:17 - Advice for startups\r\n2:33:54 - Future of search\r\n2:51:31 - Future of AI",
+      "likes": 169,
+      "has_timestamp": true
+    },
+    {
+      "author": "@KGTiberius",
+      "text": "FAILURE example I use as a test for these LLM/AI. \n—-\nIf you were to combine Mercury, Venus, Mars, and Pluto into one planet in the orbit of mars, with Charon as the moon, how would that compare to earth/moon system in mass, density, size, water, etc\n—-\nEvery single LLM/AI fails this question. The real answer is the combined mass is less than Earth — yet every LLM/AI states fake results (usually >2x more massive than Earth) , doesn’t validate the result, and has little ability to discern the objective imagined terraforming comparison for why Earth 2.0  (colonizing Mars or Luna) would be tough: gravity, water, material resources, atmosphere, magnetosphere, tides, etc.\n\nThis is a SIMPLE mathematical calculation for combined mass… with more creative determinations of water, density, gravity well, atmosphere, habitability, etc. for relative comparisons.",
+      "likes": 3,
+      "has_timestamp": false
+    },
+    {
+      "author": "@henrischomäcker",
+      "text": " @KGTiberius  Absolutely true! I really had big hopes on Perplexity but the whole service/product unfortunately has the same problems that every llm has: It's simply dumb!\nIf you don't know that the given answers are wrong, it's unusable.\nI had this scenario a few times:\nOne example: I asked Perplexity for a special mailserver configuration for wich I couldn't find the answer even unsing multiple search engines, but found one Page where my question was asked, but the first answer was a correct answer for a similar, question in used words but in fact a different question, the second and third answers seemed to be correct, but I tested them and they were not.\nPerplexity, ChatGTP, Google's newest model and Microsoft's reacted all in the same way:\nThey all gave me that first answer of that page I found which was the wrong answer to my  question but the right one to a seemingly similar question with exact that page's quotation.\nWhen I told Perplexity that that was the wrong answer and even formulated my question in a slightly other way, hoping that it would now understan, it apologized and gave me a compilation of the second two wrong answers on that page.\nWhen I then again told it it was wrong and again explained my question far mor in detail with an example, it simply made up an answer beeing as incorrect as the others.\nIf I didn't already new that all of these answers were wrong I would have tested all these wrong answers as mailserver configurations and would have lost a lot of time.\nThe problem is simply that LLMs do not understand and they do not know that they do not know. - And that's simply because the concept how they are designed does not implement that but only predicting and maybe call it combining based on something they have been trained before.\nAnd that's also the reason why they con not really code! - They do not understand the code.\nIf they now get better and better with coding it's just because they are now trained with more and better quality examples.\nImho that's also the reason why real intelligent models will not be based on LLMs, but the LLM concepts will be included for the communication part. But without another new good concept AGI or even SAI will not really be possible.\nBetter and better LLM's will be enough for a lot of applications, but imho not enough for that.\n\nThe problem with perplexity is that the idea for the product is eventually good but if you base a product on a tool that is not able to do the job \"by design\", your product can't either.",
+      "likes": 4,
+      "has_timestamp": false
+    },
+    {
+      "author": "@KGTiberius",
+      "text": " @henrischomäcker  well said. \nEvery tool has its function, and this hammer can pound nails — it can also pound tomatoes and rocks as indiscriminately. LLM is an LLM. At this time, it is a cool aggregate of vomit — not unlike Jackson Pollock.  There is beauty and utility — as long as the illusion is understood. \n\n❗️ Reason, agency, identity, recall, and concepts of time are needed. (Time in an understanding change — the person identified as John that was interacting with AI when John was 7 yrs old vs John at 15 yrs old = same person/identity? How about John from last semester to this semester? From this morning to this afternoon?",
+      "likes": 2,
+      "has_timestamp": false
+    },
+    {
+      "author": "@Dannyg2298",
+      "text": " @henrischomäcker  You seem to no more than me but form what ive seen i came to this exact conclusion they are just clever searches like you said they dont understand or have any intelligents so to speak off I keep seeing all these articles saying how there alive and thinking reasoning etc its very clever but not Ai or not what Ai has been sold as",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@KathanakChannel",
+      "text": "everyone becomes a robot on your podcast , your vibes are infectious",
+      "likes": 2,
+      "has_timestamp": false
+    }
+  ],
+  "assets_directory": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/e-gwvmhyU7A"
+}
