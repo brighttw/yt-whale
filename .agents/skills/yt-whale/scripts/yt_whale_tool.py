@@ -242,8 +242,12 @@ def pull_obsidian_messages(state):
             try:
                 with open(OWNER_NOTE_FILE, "r", encoding="utf-8") as f:
                     content = f.read().strip()
-                # 簡單過濾模板說明文字，只提取主人寫的有效留言
-                lines = [line.strip() for line in content.splitlines() if line.strip() and not line.startswith("<!--") and not line.startswith("# ")]
+                # 只提取橫線 --- 下方主人寫的有效留言，過濾模板與說明
+                if "---" in content:
+                    user_part = content.split("---", 1)[1]
+                else:
+                    user_part = content
+                lines = [line.strip() for line in user_part.splitlines() if line.strip() and not line.startswith("<!--") and not line.startswith("# ") and not line.startswith(">")]
                 if lines:
                     text_all = "\n".join(lines[-6:])
                     extracted_vids = extract_youtube_ids(text_all)
