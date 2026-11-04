@@ -1,10 +1,10 @@
 {
-  "last_pulse_time": "2026-11-03T16:57:01.294653",
+  "last_pulse_time": "2026-11-03T21:00:48.679378",
   "daily_stats": {
     "date": "2026-11-03",
-    "wakes_count": 10,
-    "deep_reads_count": 4,
-    "telegram_pings_count": 2
+    "wakes_count": 12,
+    "deep_reads_count": 6,
+    "telegram_pings_count": 6
   },
   "telegram_offset": 0,
   "owner_inbox": [
@@ -60,6 +60,24 @@
       "recommended": true,
       "impression": "Google Cloud 官方 Agent 全棧系統級評估架構，直擊 Agent Brain、Memory 與 Tool 測試痛點",
       "watched_at": "2026-11-03T13:26:41.015013"
+    },
+    {
+      "video_id": "pryCaGv8wuo",
+      "title": "DeepSeek's New AI Is An Absolute Monster",
+      "channel": "Two Minute Papers",
+      "score": 8.8,
+      "recommended": true,
+      "impression": "DeepSeek V4 Flash 單輪 964k Tokens 極致輸出，程序化向日葵與蜜蜂震撼工程展示",
+      "watched_at": "2026-11-03T19:04:59.548259"
+    },
+    {
+      "video_id": "aircAruvnKk",
+      "title": "But what is a neural network? | Deep learning chapter 1",
+      "channel": "3Blue1Brown",
+      "score": 9.2,
+      "recommended": true,
+      "impression": "神級數學可視化！3Blue1Brown 帶你從 784 個像素神經元看透深度學習底層數學之美",
+      "watched_at": "2026-11-03T21:05:26.091915"
     }
   ],
   "taste_memory": {
@@ -70,7 +88,9 @@
       "agentic design patterns",
       "mystery/true-crime",
       "ai/memory",
-      "agent-evaluation"
+      "agent-evaluation",
+      "deepseek",
+      "ai/deep-learning"
     ],
     "disliked_topics": [
       "clickbait",
@@ -112,6 +132,16 @@
         "weight": 2.0,
         "last_updated": "2026-11-03",
         "evidence_count": 1
+      },
+      "deepseek": {
+        "weight": 2.0,
+        "last_updated": "2026-11-03",
+        "evidence_count": 1
+      },
+      "ai/deep-learning": {
+        "weight": 2.0,
+        "last_updated": "2026-11-03",
+        "evidence_count": 1
       }
     },
     "channel_reputation": {
@@ -126,9 +156,14 @@
         "avg_score": 8.6
       },
       "Two Minute Papers": {
-        "total_score": 8.5,
+        "total_score": 17.3,
+        "count": 2,
+        "avg_score": 8.65
+      },
+      "3Blue1Brown": {
+        "total_score": 9.2,
         "count": 1,
-        "avg_score": 8.5
+        "avg_score": 9.2
       }
     }
   },
@@ -139,15 +174,16 @@
       "2026-11-03-GDm_uH6VxPY.md": 1793671519.8820558,
       "2026-11-03-uNqHFC8fRqE.md": 1793671728.4802864,
       "2026-11-03-4fLVq6HJsKc.md": 1793673459.114645,
-      "2026-11-03-WZZLtwnZ4w0.md": 1793683596.199727
+      "2026-11-03-WZZLtwnZ4w0.md": 1793683596.199727,
+      "2026-11-03-pryCaGv8wuo.md": 1793703833.0670998
     }
   },
   "mood_state": {
-    "energy": 85.0,
-    "affection": 80.0,
-    "satisfaction": 80.0,
-    "current_mood": "悠哉吐泡泡 🫧",
-    "last_mood_update": "2026-11-03T16:57:01.296057"
+    "energy": 69.0,
+    "affection": 92.0,
+    "satisfaction": 96.0,
+    "current_mood": "被主人寵愛超開心 💖",
+    "last_mood_update": "2026-11-03T21:05:26.091922"
   },
   "watch_queue": []
 }

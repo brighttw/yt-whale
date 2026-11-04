@@ -49,16 +49,16 @@ python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py digest <video_id>
 3. **撰寫給主人的信（若評分 >= 8.0）**：在 `diary/letters/YYYY-MM-DD-<video_id>.md` 寫下一封帶有溫度與獨立思考的信件，點出推薦給主人的理由、核心截圖與跨片關聯。
 
 ### Step 5: Telegram 互動推播與狀態記錄 (Notify & Record)
-- 若評分達到門檻（預設 8.0）且今日 Telegram 推播次數未滿，呼叫推播（推播會自動附帶 Inline 互動按鈕 `[🐳 超讚] [🥱 無感] [📌 深挖]`，並可選擇附加語音漂流瓶）：
+- 若評分達到門檻（預設 8.0）且今日 Telegram 推播次數未滿，呼叫推播（推播會自動附帶 Inline 互動按鈕 `[🐳 超讚] [🥱 無感] [📌 深挖]`；語音推薦語預設為關閉，可選擇性透過 `--voice` 或在 `config.json` 開啟）：
   ```bash
   python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py notify \
     --title "<影片標題>" \
     --url "<YouTube URL>" \
     --score <評分> \
     --message "<一句話推薦理由>" \
-    --photo "videos/assets/<video_id>/frame_1.jpg" \
-    --voice
+    --photo "videos/assets/<video_id>/frame_1.jpg"
   ```
+  *(💡 如需同時發送語音漂流瓶推薦語，可選加上 `--voice` 或在 `config/config.json` 的 `"voice": {"enabled": true}` 啟用)*
 - 最後，執行 `record` 更新記憶狀態與自動重繪 `DASHBOARD.md`：
   ```bash
   python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py record \

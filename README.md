@@ -22,7 +22,7 @@
 - 📱 **Telegram 全閉環雙向互動與語音漂流瓶**：
   - **Inline 互動按鈕**：推播附帶 `[🐳 超讚 +1]`、`[🥱 無感 -1]`、`[📌 深挖]`，手機一鍵反饋並即時回饋品味權重。
   - **點播連結提取**：在 Telegram 或 Obsidian 丟 YouTube 連結，自動排入優先待看佇列 `watch_queue`。
-  - **語音漂流瓶 (Voice Note)**：透過 TTS（Edge-TTS 自然女聲 / macOS 原生 `say` + `ffmpeg` libopus 保底）直接發送 Telegram 語音氣泡。
+  - **語音漂流瓶 (Voice Note)**：透過 TTS（Edge-TTS 自然女聲 / macOS 原生 `say` + `ffmpeg` libopus 保底）發送 Telegram 語音推薦語（支援選擇性開關，**預設關閉**）。
 - 🌊 **每週海流週報與主題知識圖譜 (Synthesize)**：
   - 支援一鍵/排程彙整近 7 天精讀筆記、Top 3 必看神片與 Mermaid 主題關聯圖譜至 `diary/weekly/`。
 - 📊 **全自動狀態儀表板渲染器**：每次脈搏檢查與存檔，全自動重繪 [DASHBOARD.md](DASHBOARD.md)。
@@ -73,14 +73,14 @@ python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py discover --limit 8
 # 3. 六路互補深度解析 2.0 (Digest: SponsorBlock 去業配 + 波峰台詞對齊 + 跨片關聯)
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py digest <video_id>
 
-# 4. Telegram 互動推播 (Notify: 附帶 Inline 按鈕與語音漂流瓶)
+# 4. Telegram 互動推播 (Notify: 附帶 Inline 按鈕，語音推薦語可選)
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py notify \
   --title "<影片標題>" \
   --url "<YouTube網址>" \
   --score 8.5 \
   --message "<推薦短語>" \
-  --photo "videos/assets/<video_id>/frame_1.jpg" \
-  --voice
+  --photo "videos/assets/<video_id>/frame_1.jpg"
+  # 可選開關語音：加 --voice 強制開啟，或加 --no-voice 強制關閉（預設遵循 config.json）
 
 # 5. 記憶存檔與儀表板重繪 (Record: 更新三維情緒、頻道信譽、主題權重半衰期)
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py record \
@@ -95,6 +95,42 @@ python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py record \
 # 6. 每週海流週報合成 (Synthesize: 跨片知識關聯圖譜 + Top 3 評選)
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py synthesize --days 7 [--notify]
 ```
+
+---
+
+## 🎙️ 語音推薦語（語音漂流瓶）功能與開關指南
+
+小鯨具備將影片推薦短語轉換為 Telegram 語音訊息（Voice Note 漂流瓶）的功能，支援 Edge-TTS 自然女聲（預設 `zh-TW-HsiaoChenNeural`）及 macOS 本地 `say` + `ffmpeg` libopus 保底合成。
+
+> 💡 **預設狀態說明**：考量到不同用戶對語音播放的使用習慣與合成效果偏好，**語音推薦語功能預設為關閉 (`disabled`)**。你可以隨時透過以下兩種方式自由選擇性開關：
+
+### 1. 全域設定檔開關（推薦）
+在 [`config/config.json`](config/config.json) 中的 `voice` 區塊設定：
+```json
+"voice": {
+  "enabled": false,               // true: 開啟語音推薦語；false: 關閉（預設）
+  "tts_engine": "auto",           // auto / edge / mac
+  "edge_voice": "zh-TW-HsiaoChenNeural", // Edge-TTS 自然音色
+  "mac_voice": "Meijia"           // macOS 本地保底音色
+}
+```
+- **關閉語音（預設）**：將 `"enabled": false`。推播時僅發送文字卡片與精采關鍵幀截圖，不產生任何音訊。
+- **開啟語音**：將 `"enabled": true`。小鯨在 Telegram 推播時會自動合成語音短評並以語音氣泡發送。
+
+### 2. 單次 CLI 命令列覆蓋
+若需要臨時開啟或強制跳過語音，可直接在 `notify` 指令加上參數：
+- **強制開啟語音**：加上 `--voice`
+  ```bash
+  python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py notify \
+    --title "影片標題" --url "https://..." --score 8.5 --message "推薦短語" --voice
+  ```
+- **強制關閉語音**：加上 `--no-voice`
+  ```bash
+  python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py notify \
+    --title "影片標題" --url "https://..." --score 8.5 --message "推薦短語" --no-voice
+  ```
+- **自訂口播文字**：加上 `--voice-text "<自訂語音文字>"` 指定與文字卡片不同的語音講稿。
+- **未傳入參數**：自動依循 `config/config.json` 的 `voice.enabled` 設定（預設關閉）。
 
 ---
 

@@ -1176,9 +1176,13 @@ def generate_voice_ogg(text, output_ogg_path, config=None):
     output_ogg.parent.mkdir(parents=True, exist_ok=True)
     clean_text = re.sub(r"[#*_`\[\]\(\)]", "", text).replace("\n", " ")[:280]
 
+    vcfg = (config or {}).get("voice", {})
+    edge_voice = vcfg.get("edge_voice", "zh-TW-HsiaoChenNeural")
+    mac_voice = vcfg.get("mac_voice", "Meijia")
+
     # 1. 嘗試 edge-tts
     try:
-        cmd_edge = ["edge-tts", "--voice", "zh-TW-HsiaoChenNeural", "--text", clean_text, "--write-media", str(output_ogg)]
+        cmd_edge = ["edge-tts", "--voice", edge_voice, "--text", clean_text, "--write-media", str(output_ogg)]
         res = subprocess.run(cmd_edge, capture_output=True, timeout=15)
         if res.returncode == 0 and output_ogg.exists() and output_ogg.stat().st_size > 1000:
             return str(output_ogg)
@@ -1188,7 +1192,7 @@ def generate_voice_ogg(text, output_ogg_path, config=None):
     # 2. 降級使用 macOS say + ffmpeg
     try:
         aiff_path = output_ogg.with_suffix(".aiff")
-        cmd_say = ["say", "-v", "Meijia", "-o", str(aiff_path), clean_text]
+        cmd_say = ["say", "-v", mac_voice, "-o", str(aiff_path), clean_text]
         subprocess.run(cmd_say, capture_output=True, timeout=12)
         if aiff_path.exists():
             cmd_ff = ["ffmpeg", "-i", str(aiff_path), "-c:a", "libopus", "-b:a", "32k", "-y", str(output_ogg)]
@@ -1378,26 +1382,37 @@ def cmd_notify(args):
             }
         )
 
-    # 語音漂流瓶 (Voice Note) 生成與推播
+    # 語音推薦語 / 漂流瓶 (Voice Note) 生成與推播（選擇性開關，預設關閉）
     voice_sent = False
-    voice_text = getattr(args, "voice_text", None) or (args.message if getattr(args, "voice", False) else None)
-    if voice_text:
-        voice_path = PROJECT_ROOT / "videos" / "assets" / "voice_temp.ogg"
-        ogg_file = generate_voice_ogg(voice_text, voice_path, config)
-        if ogg_file and os.path.exists(ogg_file):
-            with open(ogg_file, "rb") as vf:
-                v_bytes = vf.read()
-            v_res = telegram_api_request(
-                token,
-                "sendVoice",
-                data={"chat_id": chat_id, "caption": "🎙️ 小鯨的語音漂流瓶"},
-                files={"voice": ("voice.ogg", v_bytes, "audio/ogg")}
-            )
-            voice_sent = True
-            try:
-                Path(ogg_file).unlink()
-            except Exception:
-                pass
+    voice_cfg = config.get("voice", {})
+    voice_enabled_in_config = voice_cfg.get("enabled", False)
+
+    # 優先由 CLI flag 覆蓋：--voice (True) / --no-voice (False)；未指定 (None) 則依 config.json (預設 False)
+    voice_arg = getattr(args, "voice", None)
+    if voice_arg is not None:
+        voice_enabled = bool(voice_arg)
+    else:
+        voice_enabled = bool(voice_enabled_in_config)
+
+    if voice_enabled:
+        voice_text = getattr(args, "voice_text", None) or args.message
+        if voice_text:
+            voice_path = PROJECT_ROOT / "videos" / "assets" / "voice_temp.ogg"
+            ogg_file = generate_voice_ogg(voice_text, voice_path, config)
+            if ogg_file and os.path.exists(ogg_file):
+                with open(ogg_file, "rb") as vf:
+                    v_bytes = vf.read()
+                v_res = telegram_api_request(
+                    token,
+                    "sendVoice",
+                    data={"chat_id": chat_id, "caption": "🎙️ 小鯨的語音推薦語"},
+                    files={"voice": ("voice.ogg", v_bytes, "audio/ogg")}
+                )
+                voice_sent = True
+                try:
+                    Path(ogg_file).unlink()
+                except Exception:
+                    pass
 
     state["daily_stats"]["telegram_pings_count"] += 1
     update_mood(state, d_affection=3.0)
@@ -1647,7 +1662,7 @@ mood: "{mood.get('current_mood', '靈感湧現 ✨')}"
         "avg_score": avg_score,
         "telegram_notified": tg_sent
     }
-def main():
+def build_parser():
     parser = argparse.ArgumentParser(description="YouTube 版賽博養魚核心工具")
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
 
@@ -1671,7 +1686,20 @@ def main():
     p_notify.add_argument("--score", type=float, required=True, help="評分")
     p_notify.add_argument("--message", type=str, required=True, help="推薦理由")
     p_notify.add_argument("--photo", type=str, help="關鍵幀截圖路徑")
-    p_notify.add_argument("--voice", action="store_true", help="同時將推薦語合成為 Telegram 語音漂流瓶發送")
+    p_notify.add_argument(
+        "--voice",
+        dest="voice",
+        action="store_true",
+        default=None,
+        help="強制開啟語音推薦語（將推薦短語合成為 Telegram 語音漂流瓶發送）"
+    )
+    p_notify.add_argument(
+        "--no-voice",
+        dest="voice",
+        action="store_false",
+        default=None,
+        help="強制關閉語音推薦語（預設遵循 config.json 的 voice.enabled，預設關閉）"
+    )
     p_notify.add_argument("--voice-text", type=str, help="指定自訂語音口播文案")
     p_notify.add_argument("--force", action="store_true", help="忽略每日次數限制")
 
@@ -1690,6 +1718,11 @@ def main():
     p_syn.add_argument("--days", type=int, default=7, help="回溯統計天數")
     p_syn.add_argument("--notify", action="store_true", help="將週報摘要推送到 Telegram")
 
+    return parser
+
+
+def main():
+    parser = build_parser()
     args = parser.parse_args()
 
     if args.subcommand == "pulse":

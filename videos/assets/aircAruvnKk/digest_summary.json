@@ -1,0 +1,157 @@
+{
+  "video_id": "aircAruvnKk",
+  "url": "https://www.youtube.com/watch?v=aircAruvnKk",
+  "title": "But what is a neural network? | Deep learning chapter 1",
+  "channel": "3Blue1Brown",
+  "duration_seconds": 1120,
+  "duration_str": "18分40秒",
+  "chapters": [
+    {
+      "start_time": 0,
+      "title": "Introduction example",
+      "end_time": 67
+    },
+    {
+      "start_time": 67,
+      "title": "Series preview",
+      "end_time": 162
+    },
+    {
+      "start_time": 162,
+      "title": "What are neurons?",
+      "end_time": 215
+    },
+    {
+      "start_time": 215,
+      "title": "Introducing layers",
+      "end_time": 331
+    },
+    {
+      "start_time": 331,
+      "title": "Why layers?",
+      "end_time": 518
+    },
+    {
+      "start_time": 518,
+      "title": "Edge detection example",
+      "end_time": 694
+    },
+    {
+      "start_time": 694,
+      "title": "Counting weights and biases",
+      "end_time": 750
+    },
+    {
+      "start_time": 750,
+      "title": "How learning relates",
+      "end_time": 806
+    },
+    {
+      "start_time": 806,
+      "title": "Notation and linear algebra",
+      "end_time": 917
+    },
+    {
+      "start_time": 917,
+      "title": "Recap",
+      "end_time": 987
+    },
+    {
+      "start_time": 987,
+      "title": "Some final words",
+      "end_time": 1023
+    },
+    {
+      "start_time": 1023,
+      "title": "ReLU vs Sigmoid",
+      "end_time": 1120
+    }
+  ],
+  "has_subtitles": false,
+  "transcript_snippet": "無字幕軌道",
+  "sponsor_segments_skipped": 4,
+  "peak_times": [
+    "09:14",
+    "10:32",
+    "11:40",
+    "13:43"
+  ],
+  "captured_frames": [
+    {
+      "index": 1,
+      "timestamp": 554,
+      "time_str": "09:14",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/aircAruvnKk/frame_1.jpg",
+      "relative_path": "videos/assets/aircAruvnKk/frame_1.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    },
+    {
+      "index": 2,
+      "timestamp": 632,
+      "time_str": "10:32",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/aircAruvnKk/frame_2.jpg",
+      "relative_path": "videos/assets/aircAruvnKk/frame_2.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    },
+    {
+      "index": 3,
+      "timestamp": 700,
+      "time_str": "11:40",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/aircAruvnKk/frame_3.jpg",
+      "relative_path": "videos/assets/aircAruvnKk/frame_3.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    },
+    {
+      "index": 4,
+      "timestamp": 823,
+      "time_str": "13:43",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/aircAruvnKk/frame_4.jpg",
+      "relative_path": "videos/assets/aircAruvnKk/frame_4.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    }
+  ],
+  "related_past_videos": [],
+  "comments_highlight": [
+    {
+      "author": "@IhsahnÅkerfeldt",
+      "text": "This guy's YouTube channel should literally be part of some protected register for cultural and scientific heritage",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@SantoshKumarYadav-c1y",
+      "text": "This is why I love YouTube.",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@MuhammaddaboAhmad",
+      "text": "The way you present is really helpful I enjoyed every second of it.",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@NagarajaNagaraja-ye2tu",
+      "text": "You have an incredible style.",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@MinorLife04",
+      "text": "\"How to make a new microorganism at home — Part 1\" by a biologist, blissfully unaware of a bioweapon apocalypse 5 yrars later",
+      "likes": 0,
+      "has_timestamp": false
+    },
+    {
+      "author": "@AminSekh-k7d",
+      "text": "This made my day.",
+      "likes": 0,
+      "has_timestamp": false
+    }
+  ],
+  "assets_directory": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/aircAruvnKk"
+}

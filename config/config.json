@@ -51,7 +51,7 @@
     ]
   },
   "voice": {
-    "enabled": true,
+    "enabled": false,
     "tts_engine": "auto",
     "edge_voice": "zh-TW-HsiaoChenNeural",
     "mac_voice": "Meijia"
