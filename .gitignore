@@ -20,6 +20,12 @@ __pycache__/
 diary/private/
 diary/letters/
 
+# 本地即時運行狀態與使用者留言板（GitHub 僅保留 .template.md 範本）
+DASHBOARD.md
+OWNER_NOTE.md
+!DASHBOARD.template.md
+!OWNER_NOTE.template.md
+
 # 暫存影片音訊或下載緩存（關鍵幀截圖保存在 videos/assets，若需要追蹤可保留）
 videos/assets/**/*.mp4
 videos/assets/**/*.webm

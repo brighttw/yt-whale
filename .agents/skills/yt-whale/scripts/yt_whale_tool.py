@@ -226,7 +226,16 @@ def pull_obsidian_messages(state):
     watch_queue = state.setdefault("watch_queue", [])
     now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # 1. 檢查根目錄的 OWNER_NOTE.md (主人許願板/留言板)
+    # 1. 檢查根目錄的 OWNER_NOTE.md (主人許願板/留言板，若不存在則從 template 複製)
+    if not OWNER_NOTE_FILE.exists():
+        template_file = PROJECT_ROOT / "OWNER_NOTE.template.md"
+        if template_file.exists():
+            try:
+                import shutil
+                shutil.copyfile(template_file, OWNER_NOTE_FILE)
+            except Exception:
+                pass
+
     if OWNER_NOTE_FILE.exists():
         current_mtime = OWNER_NOTE_FILE.stat().st_mtime
         if current_mtime > read_state.get("owner_note_mtime", 0):
