@@ -1,10 +1,10 @@
 {
-  "last_pulse_time": "2026-11-04T09:18:33.548096",
+  "last_pulse_time": "2026-11-04T15:00:47.372333",
   "daily_stats": {
     "date": "2026-11-04",
-    "wakes_count": 3,
-    "deep_reads_count": 1,
-    "telegram_pings_count": 2
+    "wakes_count": 4,
+    "deep_reads_count": 2,
+    "telegram_pings_count": 3
   },
   "telegram_offset": 0,
   "owner_inbox": [
@@ -77,6 +77,17 @@
       "recommended": true,
       "impression": "Perplexity 創辦人 3 小時無保留訪談，深度拆解即時 RAG 搜尋架構與 AI 系統工程實戰",
       "watched_at": "2026-11-04T09:06:36.849018"
+    },
+    {
+      "video_id": "ygRDcMWHDy0",
+      "title": "This Is How Reasoning LLMs Really Work",
+      "channel": "Tales Of Tensors",
+      "score": 9.0,
+      "recommended": true,
+      "impression": "8分鐘極簡動畫講透 o1/R1 思考樹與 GRPO 相對優勢，並揭示 16% 幻覺悖論真相",
+      "watched_at": "2026-11-04T12:08:27.513462",
+      "topic": "ai/reasoning",
+      "question": "Reasoning LLM 在測試階段進行 Thought Tree 探索與自我回溯時，如何平衡 Test-Time Compute 的延遲成本與長鏈路推理累積的幻覺悖論 (Hallucination Paradox)？"
     }
   ],
   "taste_memory": {
@@ -90,7 +101,8 @@
       "agent-evaluation",
       "deepseek",
       "ai/deep-learning",
-      "system-design"
+      "system-design",
+      "ai/reasoning"
     ],
     "disliked_topics": [
       "clickbait",
@@ -147,6 +159,11 @@
         "weight": 2.0,
         "last_updated": "2026-11-04",
         "evidence_count": 1
+      },
+      "ai/reasoning": {
+        "weight": 2.0,
+        "last_updated": "2026-11-04",
+        "evidence_count": 1
       }
     },
     "channel_reputation": {
@@ -174,6 +191,11 @@
         "total_score": 8.9,
         "count": 1,
         "avg_score": 8.9
+      },
+      "Tales Of Tensors": {
+        "total_score": 9.0,
+        "count": 1,
+        "avg_score": 9.0
       }
     }
   },
@@ -187,15 +209,26 @@
       "2026-11-03-WZZLtwnZ4w0.md": 1793683596.199727,
       "2026-11-03-pryCaGv8wuo.md": 1793703833.0670998,
       "2026-11-03-aircAruvnKk.md": 1793711120.91449,
-      "2026-11-04-e-gwvmhyU7A.md": 1793754364.7948537
+      "2026-11-04-e-gwvmhyU7A.md": 1793754364.7948537,
+      "2026-11-04-ygRDcMWHDy0.md": 1793765297.2812526
     }
   },
   "mood_state": {
-    "energy": 92.0,
-    "affection": 98.0,
+    "energy": 94.0,
+    "affection": 100.0,
     "satisfaction": 100.0,
     "current_mood": "被主人寵愛超開心 💖",
-    "last_mood_update": "2026-11-04T09:06:36.849025"
+    "last_mood_update": "2026-11-04T15:00:47.380284"
   },
-  "watch_queue": []
+  "watch_queue": [],
+  "deep_dive_backlog": [
+    {
+      "video_id": "ygRDcMWHDy0",
+      "title": "This Is How Reasoning LLMs Really Work",
+      "question": "Reasoning LLM 在測試階段進行 Thought Tree 探索與自我回溯時，如何平衡 Test-Time Compute 的延遲成本與長鏈路推理累積的幻覺悖論 (Hallucination Paradox)？",
+      "source": "whale_deep_read",
+      "created_at": "2026-11-04",
+      "status": "open"
+    }
+  ]
 }

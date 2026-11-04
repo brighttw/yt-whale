@@ -22,6 +22,7 @@ python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py pulse
 - 若回傳 `"should_wake": true`：
   - **情緒狀態感受**：留意回傳的 `mood_state` 與 `mood_prompt_hint`（當前活力、親密度與收穫感），在後續撰寫日記與給主人的信時，**自然流露出對應的情緒與口氣**（如精力充沛時充滿探索欲、疲憊時慵懶撒嬌、被主人誇獎時超開心）。
   - **點播與新留言**：若 `watch_queue` 有主人丟入的 YouTube 網址，或 `new_messages_from_owner` 有新留言，優先於一般探索流處理。
+  - **週報自動觸發檢查**：若回傳 `"should_synthesize_weekly": true`（預設為每週日 20:00 後的巡游且當週尚未產出週報），請在本輪巡游結束時自動執行 `synthesize --days 7 --notify` 產出當週海流週報。
 
 ### Step 2: 探索候選影片池 (Discover)
 執行探索腳本拉取影片候選：
@@ -68,14 +69,15 @@ python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py digest <video_id>
     --score <評分> \
     --recommended \
     --impression "<短評>" \
-    --topic "<關鍵標籤>"
+    --topic "<關鍵標籤>" \
+    --question "<從本片延伸出的 1 個待深挖問題>"
   ```
 
 ---
 
 ## 🌊 每週海流週報合成 (Synthesize)
-每週日或主人需要時，執行週報合成：
+每週日晚間巡游（`should_synthesize_weekly: true`）或主人需要時，執行週報合成：
 ```bash
 python3 .agents/skills/yt-whale/scripts/yt_whale_tool.py synthesize --days 7 [--notify]
 ```
-- 自動在 `diary/weekly/YYYY-Wxx.md` 生成包含 Mermaid 主題圖譜、Top 3 必看好片、均分與巡游總結的完整週報。
+- 自動在 `diary/weekly/YYYY-Wxx.md` 生成包含 Mermaid 主題圖譜、Top 3 必看好片、📌 **待深挖問題清單 (Deep-Dive Backlog)**、均分與巡游總結的完整週報。

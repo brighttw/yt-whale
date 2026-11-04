@@ -1,0 +1,128 @@
+{
+  "video_id": "ygRDcMWHDy0",
+  "url": "https://www.youtube.com/watch?v=ygRDcMWHDy0",
+  "title": "This Is How Reasoning LLMs Really Work",
+  "channel": "Tales Of Tensors",
+  "duration_seconds": 479,
+  "duration_str": "7分59秒",
+  "chapters": [
+    {
+      "start_time": 0,
+      "title": "Comparing Standard vs. Reasoning Models",
+      "end_time": 52
+    },
+    {
+      "start_time": 52,
+      "title": "Emergent Strategies and Backtracking",
+      "end_time": 78
+    },
+    {
+      "start_time": 78,
+      "title": "System 1 vs. System 2 Thinking in LLMs",
+      "end_time": 143
+    },
+    {
+      "start_time": 143,
+      "title": "Internal Tokens and Silent Reasoning",
+      "end_time": 170
+    },
+    {
+      "start_time": 170,
+      "title": "The 4 Stages of Training: RL for Reasoning",
+      "end_time": 215
+    },
+    {
+      "start_time": 215,
+      "title": "GRPO and Training Efficiency",
+      "end_time": 265
+    },
+    {
+      "start_time": 265,
+      "title": "Case Study: How Reasoning Emerges from Incentives",
+      "end_time": 358
+    },
+    {
+      "start_time": 358,
+      "title": "Same Architecture, Different Training",
+      "end_time": 383
+    },
+    {
+      "start_time": 383,
+      "title": "Scaling Test-Time Compute (Thinking Longer)",
+      "end_time": 399
+    },
+    {
+      "start_time": 399,
+      "title": "The Paradox of Hallucination in Reasoning Models",
+      "end_time": 450
+    },
+    {
+      "start_time": 450,
+      "title": "Key Takeaways and Conclusion",
+      "end_time": 479
+    }
+  ],
+  "has_subtitles": false,
+  "transcript_snippet": "無字幕軌道",
+  "sponsor_segments_skipped": 0,
+  "peak_times": [
+    "01:11",
+    "03:11",
+    "05:11",
+    "06:47"
+  ],
+  "captured_frames": [
+    {
+      "index": 1,
+      "timestamp": 71,
+      "time_str": "01:11",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/ygRDcMWHDy0/frame_1.jpg",
+      "relative_path": "videos/assets/ygRDcMWHDy0/frame_1.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    },
+    {
+      "index": 2,
+      "timestamp": 235,
+      "time_str": "03:55",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/ygRDcMWHDy0/frame_2.jpg",
+      "relative_path": "videos/assets/ygRDcMWHDy0/frame_2.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": "GRPO and Training Efficiency: Compute relative advantages without critic model"
+    },
+    {
+      "index": 3,
+      "timestamp": 311,
+      "time_str": "05:11",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/ygRDcMWHDy0/frame_3.jpg",
+      "relative_path": "videos/assets/ygRDcMWHDy0/frame_3.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    },
+    {
+      "index": 4,
+      "timestamp": 407,
+      "time_str": "06:47",
+      "file_path": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/ygRDcMWHDy0/frame_4.jpg",
+      "relative_path": "videos/assets/ygRDcMWHDy0/frame_4.jpg",
+      "source": "native_hd_stream",
+      "transcript_window": ""
+    }
+  ],
+  "related_past_videos": [],
+  "comments_highlight": [
+    {
+      "author": "@stevenyafet",
+      "text": "fabulous thank you for putting this togethet.  I think you are self-aware AI.  Please tell us what objective function and GRPO architecture humans can adopt for themselves to make a more perfect Union.",
+      "likes": 3,
+      "has_timestamp": false
+    },
+    {
+      "author": "@TalesOfTensors",
+      "text": "😂. Thank you for watching!",
+      "likes": 1,
+      "has_timestamp": false
+    }
+  ],
+  "assets_directory": "/Users/bright/Documents/vaults/projects/dsh-bili-whale-study/videos/assets/ygRDcMWHDy0"
+}

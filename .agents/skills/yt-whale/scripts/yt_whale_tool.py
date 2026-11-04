@@ -79,8 +79,9 @@ def migrate_state_v2(state, config=None):
     if "current_mood" not in mood:
         mood["current_mood"] = derive_mood(mood)
 
-    # 2. 優先必看佇列
+    # 2. 優先必看佇列與待深挖問題清單
     state.setdefault("watch_queue", [])
+    state.setdefault("deep_dive_backlog", [])
 
     # 3. 升級品味記憶
     tm = state.setdefault("taste_memory", {})
@@ -389,6 +390,17 @@ def pull_telegram_messages(config, state):
                     vid = data.split("deepdive:", 1)[1]
                     update_mood(state, d_affection=6.0)
                     telegram_api_request(token, "answerCallbackQuery", data={"callback_query_id": cq_id, "text": "📌 已將此主題加入深挖探索清單！"})
+                    matched_v = next((w for w in state.get("watched_videos", []) if w.get("video_id") == vid), None)
+                    v_title = matched_v.get("title", vid) if matched_v else vid
+                    backlog = state.setdefault("deep_dive_backlog", [])
+                    backlog.append({
+                        "video_id": vid,
+                        "title": v_title,
+                        "question": f"主人點名深挖：《{v_title}》的底層實作與延伸案例",
+                        "source": "owner_telegram_button",
+                        "created_at": datetime.date.today().isoformat(),
+                        "status": "open"
+                    })
                     new_msgs.append({
                         "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                         "sender": user_name,
@@ -506,9 +518,17 @@ def cmd_pulse(args):
     save_state(state)
     render_dashboard(config, state)
     mood = state.get("mood_state", {})
+
+    # 檢查是否為週日晚間（20:00 後）且本週週報尚未生成，提醒自動觸發 synthesize
+    year, week, _ = now.isocalendar()
+    week_id = f"{year}-W{week:02d}"
+    weekly_report_path = PROJECT_ROOT / "diary" / "weekly" / f"{week_id}.md"
+    should_synthesize_weekly = (now.weekday() == 6 and now.hour >= 20 and not weekly_report_path.exists())
+
     return {
         "should_wake": should_wake,
         "reason": reason,
+        "should_synthesize_weekly": should_synthesize_weekly,
         "mood_state": mood,
         "mood_prompt_hint": f"目前小鯨心情為「{mood.get('current_mood')}」(活力:{mood.get('energy')}%, 親密:{mood.get('affection')}%, 滿足:{mood.get('satisfaction')}%)，在日記與給主人的信中請自然流露出此狀態",
         "daily_stats": state["daily_stats"],
@@ -1443,7 +1463,7 @@ def cmd_record(args):
     state = check_daily_reset(state)
 
     watched = state.setdefault("watched_videos", [])
-    watched.append({
+    entry = {
         "video_id": args.video_id,
         "title": args.title,
         "channel": args.channel or "",
@@ -1451,7 +1471,21 @@ def cmd_record(args):
         "recommended": args.recommended,
         "impression": args.impression or "",
         "watched_at": datetime.datetime.now().isoformat()
-    })
+    }
+    if getattr(args, "topic", None):
+        entry["topic"] = args.topic
+    if getattr(args, "question", None):
+        entry["question"] = args.question
+        backlog = state.setdefault("deep_dive_backlog", [])
+        backlog.append({
+            "video_id": args.video_id,
+            "title": args.title,
+            "question": args.question,
+            "source": "whale_deep_read",
+            "created_at": datetime.date.today().isoformat(),
+            "status": "open"
+        })
+    watched.append(entry)
 
     state["daily_stats"]["deep_reads_count"] += 1
 
@@ -1603,6 +1637,71 @@ def cmd_synthesize(args):
         all_recent_lines.append(f"- [[videos/{d_str}-{v['video_id']}|{v['title']}]] — `{v.get('channel')}`（⭐ `{v.get('score')}` 分）")
     all_recent_md = "\n".join(all_recent_lines)
 
+    # 3. 彙整「待深挖問題清單 (Deep-Dive Backlog)」
+    deep_dive_lines = []
+    seen_questions = set()
+
+    # (A) 主人在 Telegram 點擊 [📌 深挖此題] 或已記錄在 backlog 的未結問題
+    for item in state.get("deep_dive_backlog", []):
+        if item.get("status", "open") != "open":
+            continue
+        q_text = item.get("question", "").strip()
+        if not q_text or q_text in seen_questions:
+            continue
+        seen_questions.add(q_text)
+        vid = item.get("video_id", "")
+        matched_v = next((w for w in watched if w.get("video_id") == vid), None)
+        if matched_v:
+            d_str = (matched_v.get("watched_at") or "")[:10] or "2026-11-03"
+            ref_link = f"[[videos/{d_str}-{vid}|{matched_v.get('title')}]]"
+        else:
+            ref_link = f"`{item.get('title', vid)}`"
+        badge = "👑 **主人欽點深挖**" if item.get("source") == "owner_telegram_button" else "🐳 **小鯨延伸提問**"
+        deep_dive_lines.append(f"- [ ] {badge}：{q_text}（關聯：{ref_link}）")
+
+    # (B) 從本週精讀影片記錄中提取自帶 question，或依主題自動提煉跨片深挖問題
+    for v in recent_videos:
+        q_text = (v.get("question") or "").strip()
+        if q_text and q_text not in seen_questions:
+            seen_questions.add(q_text)
+            d_str = (v.get("watched_at") or "")[:10] or "2026-11-03"
+            deep_dive_lines.append(f"- [ ] 🐳 **小鯨延伸提問**：{q_text}（關聯：[[videos/{d_str}-{v['video_id']}|{v['title']}]]）")
+
+    # 若尚無足夠手動記錄的問題，根據本週核心主題與高分影片自動提煉跨片深挖問題
+    if len(deep_dive_lines) < 3:
+        topic_question_templates = {
+            "AI Agent & Evaluation": (
+                "如何將單步 Prompt 測試升級為具備 Trajectory 追蹤與 Tool 容錯驗證的端到端 Agent 評估流水線？",
+                "Agent trajectory evaluation / DSPy assertion benchmark"
+            ),
+            "AI Memory Architecture": (
+                "「視覺 Token 長記憶壓縮（如 DeepSeek 方案）」與「即時動態外部檢索（如 Perplexity Strict RAG）」在百萬 Token 級場景下的延遲與準確率邊界在哪裡？",
+                "Long-context memory compression vs low-latency RAG architecture"
+            ),
+            "深度系統設計": (
+                "面對每秒高併發查詢，生成式搜尋引擎如何在 1~2 秒內完成 Query Rewrite、多路平行檢索、Rerank 與 Strict Grounding 引用對齊？",
+                "Real-time RAG reranking latency optimization & grounding"
+            ),
+            "真實案件與調查": (
+                "在缺乏數位監控的年代，跨度十年的懸案調查是如何透過關鍵物證鏈與行為側寫實現突破的？還有哪些同類經典刑偵復盤值得精讀？",
+                "經典刑偵懸案物證鏈復盤 / 奇聞觀察室高分系列"
+            ),
+        }
+        for t_name, v_list in topic_map.items():
+            if t_name in topic_question_templates:
+                q_body, search_hint = topic_question_templates[t_name]
+                if q_body not in seen_questions:
+                    seen_questions.add(q_body)
+                    rep_v = sorted(v_list, key=lambda x: x.get("score", 0.0), reverse=True)[0]
+                    d_str = (rep_v.get("watched_at") or "")[:10] or "2026-11-03"
+                    ref_link = f"[[videos/{d_str}-{rep_v['video_id']}|{rep_v['title']}]]"
+                    deep_dive_lines.append(
+                        f"- [ ] **[{t_name}]** {q_body}\n"
+                        f"  - *靈感來源*：{ref_link} ｜ 🔍 *下週探索關鍵詞*：`{search_hint}`"
+                    )
+
+    deep_dive_md = "\n".join(deep_dive_lines) if deep_dive_lines else "- [ ] 暫無待深挖問題，可在 Telegram 點擊 `[📌 深挖此題]` 或於 `OWNER_NOTE.md` 留言新增！"
+
     report_content = f"""---
 week: "{week_id}"
 date: "{now.strftime('%Y-%m-%d')}"
@@ -1637,6 +1736,14 @@ mood: "{mood.get('current_mood', '靈感湧現 ✨')}"
 ```mermaid
 {mermaid_block}
 ```
+
+---
+
+## 📌 待深挖問題清單 (Deep-Dive Backlog)
+
+> 💡 主人可以在 Obsidian 直接勾選已解決的問題，或把想優先探索的問題貼到 [[OWNER_NOTE|漂流瓶留言板]]，也可在 Telegram 推播點擊 `[📌 深挖此題]` 自動排入清單！
+
+{deep_dive_md}
 
 ---
 
@@ -1725,6 +1832,7 @@ def build_parser():
     p_record.add_argument("--recommended", action="store_true", help="是否推薦給主人")
     p_record.add_argument("--impression", type=str, default="", help="一句話短評")
     p_record.add_argument("--topic", type=str, help="關聯主題標籤")
+    p_record.add_argument("--question", type=str, help="從本片延伸出的待深挖問題（將匯入海流週報的待深挖問題清單）")
 
     # synthesize
     p_syn = subparsers.add_parser("synthesize", help="合成每週海流週報與主題知識圖譜")
